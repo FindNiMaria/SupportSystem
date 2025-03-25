@@ -1,0 +1,61 @@
+﻿@model IEnumerable<HelpdeskSystem.Models.OSComments>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Comentários</h1>
+
+<p>
+    <a class="btn btn-dark" asp-action="Create">Criar Novo</a>
+</p>
+<table class="table table-bordered table-striped table-hover table-responsive-lg">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OS)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CriadoEm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CriadoPor)
+            </th>
+            <th>Editar</th>
+            <th>Ver</th>
+            <th>Apagar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OS.Titulo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CriadoEm)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+                </td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                </td>
+                <td>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,139 @@
+﻿    @using Microsoft.AspNetCore.Identity
+    @model IEnumerable<HelpdeskSystem.Models.Ticket>
+    @inject SignInManager<ApplicationUser> SignInManager
+    @inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Home Page";
+}
+@if (SignInManager.IsSignedIn(User))
+{
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3><span>@ViewBag.totalAberto</span></h3>
+
+                    <p>Novos Chamados</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-ticket"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3><span>@ViewBag.totalFechado</span></h3>
+
+                    <p>Chamados Atendidos</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>@ViewBag.totalOSAberto</h3>
+
+                    <p> Novas Ordens de Serviço</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-hammer"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>@ViewBag.totalOSFechado</h3>
+
+                    <p>Ordens de Serviço Atendidas</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-pie-graph"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    </div>
+     <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Titulo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Prioridade)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoPor)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoEm)
+                    </th>
+                    <th>Ver</th>
+                    <th>Comentar</th>
+                </tr>
+            </thead>
+
+  
+    
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prioridade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CriadoEm)
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-controller="Tickets"asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+            </td>
+            <td>
+                <a class="btn btn-secondary" asp-action="TicketComment" asp-controller="Comments" asp-route-id="@item.Id">Comentarios</a>
+            </td>
+        </tr>
+}
+    </tbody>
+    </table>
+</div>
+
+}
+else
+{
+    <h5>Entre para Continuar</h5>
+}
+

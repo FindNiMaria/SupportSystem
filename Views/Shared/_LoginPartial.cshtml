@@ -1,0 +1,153 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+@if (SignInManager.IsSignedIn(User))
+{
+        <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                    Dashboard
+
+                </p>
+            </a>
+        </li>
+        <!--Menu Chamados-->
+        <li class="nav-item">
+            <a asp-controller="Tickets" asp-action="Index" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Chamados
+                </p>
+            </a>
+        </li>
+        <!--Menu OS-->
+        <li class="nav-item">
+            <a asp-controller="OS" asp-action="Index" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Ordens de Serviço
+                </p>
+            </a>
+        </li>
+        <!--Menu Comentários-->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Comentários
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a asp-controller="Comments" asp-action="Index" class="nav-link">
+                        <p>Comentários de Chamado</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="OSComments" asp-action="Index" class="nav-link">
+                        <p>Comentários de OS</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <!--Menu Usuários-->
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Usuários
+                </p>
+            </a>
+        </li>
+        <!--Menu Categorias de Chamado / OS-->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Categorias
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a asp-controller="TicketCategories" asp-action="Index" class="nav-link">
+                        <p>Categoria de Chamado</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="OSCategories" asp-action="Index" class="nav-link">
+                        <p>Categoria de OS</p>
+                    </a>
+                </li>
+            </ul>
+        </li
+        <!--Menu Subcategorias-->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Sub-Categorias
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a asp-controller="TicketSubCategories" asp-action="Index" class="nav-link">
+                        <p> Sub-Categorias de Chamado</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="OSSubCategories" asp-action="Index" class="nav-link">
+                        <p>Sub-Categorias de OS</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <!--Menu Auditoria-->
+        <li class="nav-item">
+            <a asp-controller="AuditTrails" asp-action="Index" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Auditoria
+                </p>
+            </a>
+        </li>
+
+
+    <li class="nav-item">
+        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                <i class="fas fa-user-alt"></i>
+                <p>Hello @User.Identity?.Name!</p>
+            </a>
+    </li>
+    <li class="nav-item">
+        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button  type="submit" class="nav-link btn btn-link text-light">
+                <i class="fas fa-sign-out-alt"></i>
+                <p>Logout</p>
+            </button>
+        </form>
+    </li>
+
+                   
+}
+else
+{
+    <li class="nav-item active">
+        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">
+            <i class="fas fa-registered"></i>
+            <p>Register</p>
+        </a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">
+                <i class="fas fa-user"></i>
+                <p>Login</p>
+        </a>
+    </li>
+}
+</ul>

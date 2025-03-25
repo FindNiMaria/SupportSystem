@@ -1,0 +1,140 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+<h1>@ViewData["Title"]</h1>
+    <!DOCTYPE html>
+    <html lang="pt_BR">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SupportHelper | Registro</title>
+
+        <!-- Google Font: Source Sans Pro -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+        <!-- icheck bootstrap -->
+        <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+    </head>
+    <body class="hold-transition register-page">
+        <div class="register-box">
+            <div class="card card-outline card-primary">
+                <div class="card-header text-center">
+                    <a href="" class="h1"><b>Support</b>Helper</a>
+                </div>
+                <div class="card-body">
+                    <p class="login-box-msg">Crie uma Conta</p>
+
+                <form id ="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+
+                        <!--Campo Nome-->
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.PrimeiroNome" class="form-control" placeholder="Nome"/>
+                            <span asp-validation-for="Input.PrimeiroNome" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Campo Sobrenome-->
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Sobrenome" class="form-control" placeholder="Sobrenome" />
+                            <span asp-validation-for="Input.Sobrenome" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-envelope"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Genero" class="form-control" placeholder="Genero" />
+                            <span asp-validation-for="Input.Genero" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-transgender"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.País" class="form-control" placeholder="País" />
+                            <span asp-validation-for="Input.País" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-globe"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Cidade" class="form-control" placeholder="Cidade"/>
+                            <span asp-validation-for="Input.Cidade" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-globe"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Senha" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirmar Senha" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="icheck-primary">
+                                    <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                                    <label for="agreeTerms">
+                                        Eu aceito os <a href="#">Termos de Serviço</a>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-4">
+                                <button typid="registerSubmit" type="submit" class="btn btn-primary btn-block">Registrar</button>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </form>
+                </div>
+                <!-- /.form-box -->
+            </div><!-- /.card -->
+        </div>
+        <!-- /.register-box -->
+        <!-- jQuery -->
+        <script src="../../plugins/jquery/jquery.min.js"></script>
+        <!-- Bootstrap 4 -->
+        <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+
+    @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

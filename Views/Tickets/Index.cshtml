@@ -1,0 +1,86 @@
+﻿@model IEnumerable<HelpdeskSystem.Models.Ticket>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Chamados</h1>
+
+<p>
+    <a class="btn btn-dark" asp-action="Create">Novo Chamado</a>
+</p>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Chamados: </h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Titulo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Prioridade)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoPor)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoEm)
+                    </th>
+                    <th>Editar</th>
+                    <th>Ver</th>
+                    <th>Comentar</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+
+  
+    
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prioridade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CriadoEm)
+            </td>
+            <td>
+                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+            </td>
+            <td>
+                <a class="btn btn-secondary" asp-action="TicketComment" asp-controller="Comments" asp-route-id="@item.Id">Comentarios</a>
+            </td>
+            <td>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+            </td>
+        </tr>
+}
+    </tbody>
+    </table>
+</div> 
+</div>
