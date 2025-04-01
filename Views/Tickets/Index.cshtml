@@ -1,4 +1,4 @@
-﻿@model IEnumerable<HelpdeskSystem.Models.Ticket>
+﻿@model HelpdeskSystem.ViewModels.TicketViewModel;
 
 @{
     ViewData["Title"] = "Index";
@@ -46,7 +46,7 @@
   
     
     <tbody>
-    @foreach (var item in Model) {
+    @foreach (var item in Model.Tickets) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Id)
@@ -73,7 +73,7 @@
                 <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
             </td>
             <td>
-                <a class="btn btn-secondary" asp-action="TicketComment" asp-controller="Comments" asp-route-id="@item.Id">Comentarios</a>
+                <a class="btn btn-secondary" asp-action="TicketComment" asp-controller="Comments" asp-route-id="@item.Id">Observações</a>
             </td>
             <td>
                 <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>

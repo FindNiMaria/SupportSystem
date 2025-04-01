@@ -16,9 +16,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<OS> OS { get; set; }
     public DbSet<OSComments> OSComments { get; set; }
     public DbSet<TicketCategory> TicketCategories{ get; set; }
-    public DbSet<OSCategory> OSCategories { get; set; }
     public DbSet<TicketSubCategory> TicketSubCategories { get; set; }
-    public DbSet<OSSubCategory> OSSubCategories { get; set; }
+    public DbSet<OSCategory> OSCategories { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

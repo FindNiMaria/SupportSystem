@@ -63,9 +63,20 @@ namespace HelpdeskSystem.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ticketCategory.CriadoEm = DateTime.Now;
             ticketCategory.CriadoPorId = userId;
+            _context.Add(ticketCategory);
             await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-                return View(ticketCategory);
+            var activity = new AuditTrail
+            {
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = userId,
+                Module = "Categoria de Chamado",
+                AffectedTable = "Categoria de Chamados"
+            };
+            _context.Add(activity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: TicketCategories/Edit/5
@@ -81,8 +92,6 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketCategory.CriadoPorId);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketCategory.ModificadoPorId);
             return View(ticketCategory);
         }
 

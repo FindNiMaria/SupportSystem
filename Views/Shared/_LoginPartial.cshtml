@@ -2,6 +2,8 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+
+
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 @if (SignInManager.IsSignedIn(User))
 {
@@ -37,19 +39,19 @@
             <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-copy"></i>
                 <p>
-                    Comentários
+                    Observações
                     <i class="fas fa-angle-left right"></i>
                 </p>
             </a>
             <ul class="nav nav-treeview">
                 <li class="nav-item">
                     <a asp-controller="Comments" asp-action="Index" class="nav-link">
-                        <p>Comentários de Chamado</p>
+                        <p>Observações de Chamado</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a asp-controller="OSComments" asp-action="Index" class="nav-link">
-                        <p>Comentários de OS</p>
+                        <p>Observações de OS</p>
                     </a>
                 </li>
             </ul>
@@ -84,7 +86,7 @@
                     </a>
                 </li>
             </ul>
-        </li
+        </li>
         <!--Menu Subcategorias-->
         <li class="nav-item">
             <a href="#" class="nav-link">

@@ -4,62 +4,65 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-dark" asp-action="Create">Nova Categoria</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Codigo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CriadoPor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CriadoEm)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModificadoPor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModificadoEm)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Codigo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CriadoPor.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CriadoEm)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModificadoPor.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModificadoEm)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Categorias: </h3>
+    </div>
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Codigo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Nome)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoPor)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoEm)
+                    </th>
+                    <th>Editar</th>
+                    <th>Sub-Categorias</th>
+                    <th>Detalhes</th>
+                    <th>Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Codigo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nome)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CriadoEm)
+                        </td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="Index" asp-controller="TicketSubCategories" asp-route-id="@item.Id">Sub-Categorias</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+                        </td>
+                    </tr>      
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
-using HelpdeskSystem.Data.Migrations;
 using System.Security.Claims;
+using HelpdeskSystem.ViewModels;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -22,10 +22,17 @@ namespace HelpdeskSystem.Controllers
         }
 
         // GET: TicketSubCategories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int id, TicketSubCategoriesVM vm)
         {
-            var applicationDbContext = _context.TicketSubCategories.Include(t => t.Category).Include(t => t.CriadoPor).Include(t => t.ModificadoPor);
-            return View(await applicationDbContext.ToListAsync());
+            vm.TicketSubCategories = await _context.TicketSubCategories
+                .Include(t => t.Categoria)
+                .Include(t => t.CriadoPor)
+                .Include(t => t.ModificadoPor)
+                .Where(x=>x.CategoriaId == id)
+                .ToListAsync();
+
+            vm.CategoriaId = id;
+            return View(vm);
         }
 
         // GET: TicketSubCategories/Details/5
@@ -37,7 +44,6 @@ namespace HelpdeskSystem.Controllers
             }
 
             var ticketSubCategory = await _context.TicketSubCategories
-                .Include(t => t.Category)
                 .Include(t => t.CriadoPor)
                 .Include(t => t.ModificadoPor)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -50,12 +56,11 @@ namespace HelpdeskSystem.Controllers
         }
 
         // GET: TicketSubCategories/Create
-        public IActionResult Create()
+        public IActionResult Create(int Id)
         {
-            ViewData["CategoryId"] = new SelectList(_context.TicketCategories, "Id", "Id");
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
+            TicketSubCategory category = new();
+            category.CategoriaId = Id;
+            return View(category);
         }
 
         // POST: TicketSubCategories/Create
@@ -63,16 +68,30 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CategoryId,Codigo,Nome,CriadoPorId,CriadoEm,ModificadoPorId,ModificadoEm")] TicketSubCategory ticketSubCategory)
+        public async Task<IActionResult> Create(int id,TicketSubCategory ticketSubCategory)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ticketSubCategory.ModificadoEm = DateTime.Now;
-            ticketSubCategory.ModificadoPorId = userId;
+            var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ticketSubCategory.CriadoPorId = usuariologado;
+            ticketSubCategory.CriadoEm = DateTime.Now;
+
+            ticketSubCategory.Id = 0;
+            ticketSubCategory.CategoriaId = id;
             _context.Add(ticketSubCategory);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            
-            
+
+            //Registrar no Log de Auditoria
+
+            var activity = new AuditTrail
+            {
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = usuariologado,
+                Module = "Sub-Categorias",
+                AffectedTable = "Sub-Categoria de Chamados"
+            };
+            _context.Add(activity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", new {id=id});
             return View(ticketSubCategory);
         }
 
@@ -89,7 +108,6 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.TicketCategories, "Id", "Id", ticketSubCategory.CategoryId);
             ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.CriadoPorId);
             ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.ModificadoPorId);
             return View(ticketSubCategory);
@@ -100,7 +118,7 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TicketSubCategory ticketSubCategory)
+        public async Task<IActionResult> Edit(int id,TicketSubCategory ticketSubCategory)
         {
             if (id != ticketSubCategory.Id)
             {
@@ -111,11 +129,12 @@ namespace HelpdeskSystem.Controllers
             {
                 try
                 {
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    ticketSubCategory.ModificadoPorId = usuariologado;
                     ticketSubCategory.ModificadoEm = DateTime.Now;
-                    ticketSubCategory.ModificadoPorId = userId;
                     _context.Update(ticketSubCategory);
                     await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -142,7 +161,6 @@ namespace HelpdeskSystem.Controllers
             }
 
             var ticketSubCategory = await _context.TicketSubCategories
-                .Include(t => t.Category)
                 .Include(t => t.CriadoPor)
                 .Include(t => t.ModificadoPor)
                 .FirstOrDefaultAsync(m => m.Id == id);

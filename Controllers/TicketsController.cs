@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
 using System.Security.Claims;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using HelpdeskSystem.ViewModels;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -21,14 +23,14 @@ namespace HelpdeskSystem.Controllers
         }
 
         // GET: Tickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TicketViewModel vm)
         {
-            var tickets = await _context.Tickets
+            vm.Tickets = await _context.Tickets
                 .Include(t => t.CriadoPor)
                 .OrderBy(x => x.CriadoEm)
                 .ToListAsync();
 
-            return View(tickets);
+            return View(vm);
         }
 
         // GET: Tickets/Details/5
@@ -54,6 +56,7 @@ namespace HelpdeskSystem.Controllers
         public IActionResult Create()
         {
             ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName");
+            ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");
             return View();
         }
 
@@ -69,20 +72,21 @@ namespace HelpdeskSystem.Controllers
                 _context.Add(ticket);
                 await _context.SaveChangesAsync();
 
-            //Registrar no Log de Auditoria
+                //Registrar no Log de Auditoria
 
-            var activity = new AuditTrail
-            {
-                Action = "Criar",
-                TimeStamp = DateTime.Now,
-                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserId = userId,
-                Module = "Chamados",
-                AffectedTable = "Chamados"
-            };
-            _context.Add(activity);
-            await _context.SaveChangesAsync();
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
+                var activity = new AuditTrail
+                {
+                    Action = "Criar",
+                    TimeStamp = DateTime.Now,
+                    IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserId = userId,
+                    Module = "Chamados",
+                    AffectedTable = "Tickets"
+                };
+                _context.Add(activity);
+                await _context.SaveChangesAsync();
+                ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
+                 ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");
             return RedirectToAction(nameof(Index));
         }
 
@@ -110,17 +114,21 @@ namespace HelpdeskSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Ticket ticket)
         {
+            
             if (id != ticket.Id)
             {
                 return NotFound();
             }
+            
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     _context.Update(ticket);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -133,11 +141,12 @@ namespace HelpdeskSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
             return View(ticket);
         }
+            
+    
 
         // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)

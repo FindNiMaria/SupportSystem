@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250325225146_AdSUb")]
+    partial class AdSUb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,6 +305,9 @@ namespace HelpdeskSystem.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("IdSubCategoria")
+                        .HasColumnType("int");
+
                     b.Property<string>("Prioridade")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -310,9 +316,6 @@ namespace HelpdeskSystem.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SubCategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Titulo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -320,8 +323,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CriadoPorId");
-
-                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("Tickets");
                 });
@@ -375,6 +376,9 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -398,7 +402,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CriadoPorId");
 
@@ -626,13 +630,7 @@ namespace HelpdeskSystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HelpdeskSystem.Models.TicketSubCategory", "SubCategory")
-                        .WithMany()
-                        .HasForeignKey("SubCategoryId");
-
                     b.Navigation("CriadoPor");
-
-                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketCategory", b =>
@@ -655,9 +653,9 @@ namespace HelpdeskSystem.Data.Migrations
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketSubCategory", b =>
                 {
-                    b.HasOne("HelpdeskSystem.Models.TicketCategory", "Categoria")
+                    b.HasOne("HelpdeskSystem.Models.TicketCategory", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoriaId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -671,7 +669,7 @@ namespace HelpdeskSystem.Data.Migrations
                         .WithMany()
                         .HasForeignKey("ModificadoPorId");
 
-                    b.Navigation("Categoria");
+                    b.Navigation("Category");
 
                     b.Navigation("CriadoPor");
 
