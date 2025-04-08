@@ -27,6 +27,7 @@ namespace HelpdeskSystem.Controllers
         {
             vm.Tickets = await _context.Tickets
                 .Include(t => t.CriadoPor)
+                .Include(t=> t.SubCategory)
                 .OrderBy(x => x.CriadoEm)
                 .ToListAsync();
 
@@ -64,29 +65,36 @@ namespace HelpdeskSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Ticket ticket)
+        public async Task<IActionResult> Create( TicketViewModel ticketvm)
         {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                ticket.CriadoEm = DateTime.Now;
-                ticket.CriadoPorId = userId; 
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+            Ticket ticket = new();
+            ticket.Id = ticketvm.Id;
+            ticket.Titulo = ticketvm.Titulo;
+            ticket.Descricao = ticketvm.Descricao;
+            ticket.Status = ticketvm.Status;
+            ticket.Prioridade = ticketvm.Prioridade;
+            ticket.SubCategoryId = ticketvm.SubCategoriaId;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ticket.CriadoEm = DateTime.Now;
+            ticket.CriadoPorId = userId; 
+            _context.Add(ticket);
+            await _context.SaveChangesAsync();
 
-                //Registrar no Log de Auditoria
+            //Registrar no Log de Auditoria
 
-                var activity = new AuditTrail
-                {
-                    Action = "Criar",
-                    TimeStamp = DateTime.Now,
-                    IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                    UserId = userId,
-                    Module = "Chamados",
-                    AffectedTable = "Tickets"
-                };
-                _context.Add(activity);
-                await _context.SaveChangesAsync();
-                ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
-                 ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");
+            var activity = new AuditTrail
+            {
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = userId,
+                Module = "Chamados",
+                AffectedTable = "Tickets"
+            };
+            _context.Add(activity);
+            await _context.SaveChangesAsync();
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
+            ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");
             return RedirectToAction(nameof(Index));
         }
 

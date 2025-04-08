@@ -44,13 +44,17 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="CategoriaId" class="control-label"></label>
-                        <select asp-for="CategoriaId" class="form-control get-subcategories" asp-items="ViewBag.CategoriaId"></select>
+                        <select asp-for="CategoriaId" id="CategoriaId" name="CategoriaId" class="form-control get-subcategories" asp-items="ViewBag.CategoriaId">
+                            <option value="">-- Selecione uma Categoria --</option>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="IdSubCategoria" class="control-label"></label>
-                        <select asp-for="IdSubCategoria" class="form-control"></select>
+                        <label asp-for="SubCategoriaId" class="control-label"></label>
+                        <select asp-for="SubCategoriaId" id="SubCategoriaId" name="SubCategoriaId" class="form-control">
+                            <option value="">-- Selecione uma Subcategoria --</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -67,5 +71,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/customjs/TicketSystem.js"></script>

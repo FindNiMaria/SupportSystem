@@ -7,8 +7,23 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 @if (SignInManager.IsSignedIn(User))
 {
+    //Menu Nome de Usuário // LogOut
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                <i class="fas fa-user-alt"></i>
+                <p>Bem-Vindo @User.Identity?.Name!</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-light">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <p>Logout</p>
+                </button>
+            </form>
+        </li>
         <li class="nav-item menu-open">
-            <a href="#" class="nav-link active">
+            <a asp-controller="Home" asp-action="Index" class="nav-link">
                 <i class="nav-icon fas fa-tachometer-alt"></i>
                 <p>
                     Dashboard
@@ -109,6 +124,28 @@
                 </li>
             </ul>
         </li>
+       <!--Menu SystemCodes-->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-copy"></i>
+                <p>
+                    Códigos de Sistema
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a asp-controller="SystemCodes" asp-action="Index" class="nav-link">
+                        <p> Códigos de Sistema</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="SystemCodeDetails" asp-action="Index" class="nav-link">
+                        <p>Detalhes de Códigos de Sistema</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <!--Menu Auditoria-->
         <li class="nav-item">
             <a asp-controller="AuditTrails" asp-action="Index" class="nav-link">
@@ -118,22 +155,6 @@
                 </p>
             </a>
         </li>
-
-
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                <i class="fas fa-user-alt"></i>
-                <p>Hello @User.Identity?.Name!</p>
-            </a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-light">
-                <i class="fas fa-sign-out-alt"></i>
-                <p>Logout</p>
-            </button>
-        </form>
-    </li>
 
                    
 }

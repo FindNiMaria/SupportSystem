@@ -25,6 +25,9 @@
                         @Html.DisplayNameFor(model => model.Titulo)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.SubCategoriaId)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.Status)
                     </th>
                     <th>
@@ -55,6 +58,9 @@
                 @Html.DisplayFor(modelItem => item.Titulo)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.SubCategory.Name)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
@@ -63,6 +69,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
             </td>
+            
             <td>
                 @Html.DisplayFor(modelItem => item.CriadoEm)
             </td>
