@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
+using HelpdeskSystem.Data.Migrations;
+using System.Security.Claims;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -22,8 +24,14 @@ namespace HelpdeskSystem.Controllers
         // GET: SystemCodeDetails
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.systemCodeDetails.Include(s => s.SystemCode);
-            return View(await applicationDbContext.ToListAsync());
+            
+            var systemCodeDetail = await _context
+                .systemCodeDetails
+                .Include(s => s.SystemCode)
+                .Include(x => x.CriadoPor)
+                .ToListAsync();
+
+            return View(systemCodeDetail);
         }
 
         // GET: SystemCodeDetails/Details/5
@@ -48,7 +56,7 @@ namespace HelpdeskSystem.Controllers
         // GET: SystemCodeDetails/Create
         public IActionResult Create()
         {
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Id");
+            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Descricao");
             return View();
         }
 
@@ -57,15 +65,25 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Codigo,Descricao,PedidoNo,SystemCodeId")] SystemCodeDetail systemCodeDetail)
+        public async Task<IActionResult> Create(SystemCodeDetail systemCodeDetail)
         {
-            if (ModelState.IsValid)
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            systemCodeDetail.CriadoEm = DateTime.Now;
+            systemCodeDetail.CriadoPorId = userId;
+            _context.Add(systemCodeDetail);
+            await _context.SaveChangesAsync();
+            var activity = new AuditTrail
             {
-                _context.Add(systemCodeDetail);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Id", systemCodeDetail.SystemCodeId);
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = userId,
+                Module = "SystemCodeDetails",
+                AffectedTable = "SystemCodeDetails"
+            };
+
+            return RedirectToAction(nameof(Index));
             return View(systemCodeDetail);
         }
 
@@ -82,7 +100,7 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Id", systemCodeDetail.SystemCodeId);
+            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Descricao", systemCodeDetail.SystemCodeId);
             return View(systemCodeDetail);
         }
 
@@ -91,19 +109,25 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Codigo,Descricao,PedidoNo,SystemCodeId")] SystemCodeDetail systemCodeDetail)
+        public async Task<IActionResult> Edit(int id, SystemCodeDetail systemCodeDetail)
         {
+
             if (id != systemCodeDetail.Id)
             {
                 return NotFound();
             }
 
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    systemCodeDetail.ModificadoEm = DateTime.Now;
+                    systemCodeDetail.ModificadoPorId = userId;
                     _context.Update(systemCodeDetail);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -116,9 +140,8 @@ namespace HelpdeskSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
             }
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Id", systemCodeDetail.SystemCodeId);
             return View(systemCodeDetail);
         }
 

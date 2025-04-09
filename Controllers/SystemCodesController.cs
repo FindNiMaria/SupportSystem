@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
+using System.Security.Claims;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -22,7 +23,13 @@ namespace HelpdeskSystem.Controllers
         // GET: SystemCodes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.systemCodes.ToListAsync());
+            var systemCodes = await _context
+                .systemCodes
+                .Include(x=>x.CriadoPor)
+                .ToListAsync();
+
+
+            return View(systemCodes);
         }
 
         // GET: SystemCodes/Details/5
@@ -54,16 +61,28 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Codigo,Descricao")] SystemCode systemCode)
+        public async Task<IActionResult> Create(SystemCode systemCode)
         {
-            if (ModelState.IsValid)
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            systemCode.CriadoEm = DateTime.Now;
+            systemCode.CriadoPorId = userId;
+            _context.Add(systemCode);
+            await _context.SaveChangesAsync();
+            var activity = new AuditTrail
             {
-                _context.Add(systemCode);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = userId,
+                Module = "SystemCodes",
+                AffectedTable = "SystemCodes"
+            };
+
+            return RedirectToAction(nameof(Index));
             return View(systemCode);
         }
+      
 
         // GET: SystemCodes/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -86,19 +105,25 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Codigo,Descricao")] SystemCode systemCode)
+        public async Task<IActionResult> Edit(int id, SystemCode systemCode)
         {
+
             if (id != systemCode.Id)
             {
                 return NotFound();
             }
 
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    systemCode.ModificadoEm = DateTime.Now;
+                    systemCode.ModificadoPorId = userId;
                     _context.Update(systemCode);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -111,7 +136,7 @@ namespace HelpdeskSystem.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
             }
             return View(systemCode);
         }

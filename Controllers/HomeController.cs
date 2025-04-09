@@ -19,14 +19,10 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        int totalFechado = _context.Tickets.Count(i => i.Status == "Fechado");
-        ViewBag.totalFechado = totalFechado;
-        int totalAberto = _context.Tickets.Count(i => i.Status == "Aberto");
-        ViewBag.totalAberto = totalAberto;
-        int totalOSFechado = _context.OS.Count(i => i.Status == "Fechado");
-        ViewBag.totalOSFechado = totalOSFechado;
-        int totalOSAberto = _context.OS.Count(i => i.Status == "Aberto");
-        ViewBag.totalOSAberto = totalOSAberto;
+        ViewBag.totalFechado = _context.Tickets.Count(x => x.Status.SystemCode.Codigo == "Status" && x.Status.Codigo == "Fechado");
+
+        ViewBag.totalAberto = _context.Tickets.Count(x => x.Status.SystemCode.Codigo == "Status" && x.Status.Codigo == "Pendente");
+
 
         var tickets = await _context.Tickets
                 .Include(t => t.CriadoPor)

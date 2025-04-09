@@ -1,6 +1,7 @@
 ﻿using HelpdeskSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace HelpdeskSystem.Data;
 
@@ -83,6 +84,38 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(c => c.CriadoPor)
             .WithMany()
             .HasForeignKey(c => c.CriadoPorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<SystemCodeDetail>()
+            .HasOne(c => c.SystemCode)
+            .WithMany()
+            .HasForeignKey(c => c.SystemCodeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Ticket>()
+            .HasOne(c => c.Prioridade)
+            .WithMany()
+            .HasForeignKey(c => c.PrioridadeId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Ticket>()
+            .HasOne(c => c.Status)
+            .WithMany()
+            .HasForeignKey(c => c.StatusId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<TicketCategory>()
+        .HasOne(c => c.PrioridadePadrao)
+        .WithMany()
+        .HasForeignKey(c => c.PrioridadePadraoId)
+        .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Ticket>()
+        .HasOne(t => t.Categoria)
+        .WithMany()
+        .HasForeignKey(t => t.CategoriaId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TicketCategory>()
+            .HasOne(tc => tc.PrioridadePadrao)
+            .WithMany()
+            .HasForeignKey(tc => tc.PrioridadePadraoId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 

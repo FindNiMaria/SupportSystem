@@ -21,6 +21,7 @@
                         <span asp-validation-for="Titulo" class="text-danger"></span>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="Descricao" class="control-label"></label>
@@ -28,26 +29,60 @@
                         <span asp-validation-for="Descricao" class="text-danger"></span>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="Status" class="control-label"></label>
-                        <input asp-for="Status" class="form-control" />
-                        <span asp-validation-for="Status" class="text-danger"></span>
+                        <label asp-for="StatusId" class="control-label"></label>
+                        <input asp-for="StatusId" class="form-control" />
+                        <span asp-validation-for="StatusId" class="text-danger"></span>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="Prioridade" class="control-label"></label>
-                        <input asp-for="Prioridade" class="form-control" />
-                        <span asp-validation-for="Prioridade" class="text-danger"></span>
+                        <label asp-for="CategoriaId" class="control-label"></label>
+                        <select asp-for="CategoriaId" id="CategoriaId" class="form-control" asp-items="ViewBag.Categorias">
+                            <option value="">-- Selecione uma Categoria --</option>
+                        </select>
+                        <span asp-validation-for="CategoriaId" class="text-danger"></span>
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="SubCategoryId" class="control-label"></label>
+                        <select asp-for="SubCategoryId" id="SubCategoriaId" class="form-control" asp-items="ViewBag.SubCategorias">
+                            <option value="">-- Selecione uma Subcategoria --</option>
+                        </select>
+                        <span asp-validation-for="SubCategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Prioridade</label>
+                        <select id="PrioridadeSelect" class="form-control" disabled>
+                            @if (ViewBag.Prioridades != null)
+                            {
+                                foreach (var item in (SelectList)ViewBag.Prioridades)
+                                {
+                                    var selected = item.Value == Model.PrioridadeId.ToString() ? "selected" : "";
+                                    <option value="@item.Value" selected="@selected">@item.Text</option>
+                                }
+                            }
+                        </select>
+                        <input type="hidden" asp-for="PrioridadeId" />
+                        <span asp-validation-for="PrioridadeId" class="text-danger"></span>
+                    </div>
+                </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="CriadoPorId" class="control-label"></label>
                         <select asp-for="CriadoPorId" class="form-control" asp-items="ViewBag.CriadoPorId"></select>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="CriadoEm" class="control-label"></label>
@@ -56,16 +91,51 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
-            </div>                
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>
+
 <div>
-    <a asp-action="Index">Voltar a Lista</a>
+    <a asp-action="Index">Voltar à Lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script>
+        $('#CategoriaId').change(function () {
+            const categoriaId = $(this).val();
+
+            if (categoriaId) {
+                // Atualiza prioridade
+                $.get('/Data/GetCategoriaPrioridade', { categoriaId: categoriaId }, function (data) {
+                    if (data && data.id && data.descricao) {
+                        $('#PrioridadeSelect').html(`<option selected>${data.descricao}</option>`);
+                        $('input[name="PrioridadeId"]').val(data.id);
+                    }
+                });
+
+                // Atualiza subcategorias
+                $.get('/Data/GetTicketSubCategories', { Id: categoriaId }, function (data) {
+                    let options = '<option value="">-- Selecione uma Subcategoria --</option>';
+                    $.each(data, function (index, item) {
+                        options += `<option value="${item.id}">${item.name}</option>`;
+                    });
+                    $('#SubCategoriaId').html(options);
+                });
+            } else {
+                $('#PrioridadeSelect').html('<option value="">-- Selecione uma Prioridade --</option>');
+                $('input[name="PrioridadeId"]').val('');
+                $('#SubCategoriaId').html('<option value="">-- Selecione uma Subcategoria --</option>');
+            }
+        });
+    </script>
 }

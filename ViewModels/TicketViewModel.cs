@@ -15,10 +15,10 @@ namespace HelpdeskSystem.ViewModels
         public string Descricao { get; set; }
 
         [DisplayName("Status")]
-        public string Status { get; set; }
+        public int StatusId { get; set; }
 
         [DisplayName("Prioridade")]
-        public string Prioridade { get; set; }
+        public int PrioridadeId { get; set; }
 
         [DisplayName("Criado por:")]
         public string CriadoPorId { get; set; }
@@ -26,7 +26,6 @@ namespace HelpdeskSystem.ViewModels
 
         [DisplayName("Criado Em:")]
         public DateTime CriadoEm { get; set; }
-        public int? IdSubCategoria { get; set; }
 
         [DisplayName("Categoria")]
         public int CategoriaId { get; set; }

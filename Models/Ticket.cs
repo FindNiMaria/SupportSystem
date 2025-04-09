@@ -2,7 +2,7 @@
 
 namespace HelpdeskSystem.Models
 {
-    public class Ticket
+    public class Ticket : UserActivity
     {
         [DisplayName("Nº")]
         public int Id { get; set; }
@@ -14,19 +14,18 @@ namespace HelpdeskSystem.Models
         public string Descricao { get; set; }
 
         [DisplayName("Status")]
-        public string Status { get; set; }
+        public int StatusId { get; set; }
+        public SystemCodeDetail Status { get; set; }
 
         [DisplayName("Prioridade")]
-        public string Prioridade { get; set; }
+        public int PrioridadeId { get; set; }
+        public SystemCodeDetail Prioridade { get; set; }
 
-        [DisplayName("Criado por:")]
-        public string CriadoPorId { get; set; }
-        public ApplicationUser CriadoPor { get; set; }
+        [DisplayName ("Categoria: ")]
+        public int CategoriaId { get; set; }
+        public TicketCategory Categoria { get; set; }
 
-        [DisplayName("Criado Em:")]
-        public DateTime CriadoEm { get; set; }
-
-        [DisplayName("Sub-Categoria")]
+        [DisplayName("Sub-Categoria: ")]
         public int? SubCategoryId { get; set; }
         public TicketSubCategory SubCategory { get; set;}
     }

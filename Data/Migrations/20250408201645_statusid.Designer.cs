@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408201645_statusid")]
+    partial class statusid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -375,9 +378,6 @@ namespace HelpdeskSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CriadoEm")
                         .HasColumnType("datetime2");
 
@@ -388,12 +388,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ModificadoEm")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModificadoPorId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("PrioridadeId")
                         .HasColumnType("int");
@@ -410,11 +404,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoriaId");
-
                     b.HasIndex("CriadoPorId");
-
-                    b.HasIndex("ModificadoPorId");
 
                     b.HasIndex("PrioridadeId");
 
@@ -454,16 +444,11 @@ namespace HelpdeskSystem.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PrioridadePadraoId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CriadoPorId");
 
                     b.HasIndex("ModificadoPorId");
-
-                    b.HasIndex("PrioridadePadraoId");
 
                     b.ToTable("TicketCategories");
                 });
@@ -766,21 +751,11 @@ namespace HelpdeskSystem.Data.Migrations
 
             modelBuilder.Entity("HelpdeskSystem.Models.Ticket", b =>
                 {
-                    b.HasOne("HelpdeskSystem.Models.TicketCategory", "Categoria")
-                        .WithMany()
-                        .HasForeignKey("CategoriaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("HelpdeskSystem.Models.ApplicationUser", "CriadoPor")
                         .WithMany()
                         .HasForeignKey("CriadoPorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("HelpdeskSystem.Models.ApplicationUser", "ModificadoPor")
-                        .WithMany()
-                        .HasForeignKey("ModificadoPorId");
 
                     b.HasOne("HelpdeskSystem.Models.SystemCodeDetail", "Prioridade")
                         .WithMany()
@@ -798,11 +773,7 @@ namespace HelpdeskSystem.Data.Migrations
                         .WithMany()
                         .HasForeignKey("SubCategoryId");
 
-                    b.Navigation("Categoria");
-
                     b.Navigation("CriadoPor");
-
-                    b.Navigation("ModificadoPor");
 
                     b.Navigation("Prioridade");
 
@@ -824,16 +795,9 @@ namespace HelpdeskSystem.Data.Migrations
                         .HasForeignKey("ModificadoPorId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("HelpdeskSystem.Models.SystemCodeDetail", "PrioridadePadrao")
-                        .WithMany()
-                        .HasForeignKey("PrioridadePadraoId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("CriadoPor");
 
                     b.Navigation("ModificadoPor");
-
-                    b.Navigation("PrioridadePadrao");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketSubCategory", b =>
