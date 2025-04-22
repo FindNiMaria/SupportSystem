@@ -16,10 +16,12 @@ namespace HelpdeskSystem.Controllers
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public TicketsController(ApplicationDbContext context)
+        private readonly IConfiguration _configuration;
+        public TicketsController(ApplicationDbContext context, IConfiguration configuration)
         {
+
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: Tickets
@@ -44,6 +46,9 @@ namespace HelpdeskSystem.Controllers
 
             var ticket = await _context.Tickets
                 .Include(t => t.CriadoPor)
+                .Include(t => t.SubCategory)
+                .Include(t => t.Status)
+                .Include(t=> t.Prioridade)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticket == null)
             {
@@ -70,8 +75,17 @@ namespace HelpdeskSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( TicketViewModel ticketvm)
+        public async Task<IActionResult> Create( TicketViewModel ticketvm, IFormFile anexo)
         {
+            if (anexo.Length > 0)
+            {
+                var filename = "TicketAttachment"+DateTime.Now.ToString("yyyymmddhhmmss");
+                var path = _configuration["FileSettings:UploadsFolder"]!;
+                var filepath = Path.Combine(path, filename);
+                var stream = new FileStream(filepath,FileMode.Create);
+                await anexo.CopyToAsync(stream);
+                ticketvm.Anexo = filename;
+            }
             var pending = await _context.systemCodeDetails
                 .Include(x => x.SystemCode)
                 .Where(x => x.SystemCode.Codigo == "Status" && x.Codigo == "Pendente")
@@ -91,6 +105,7 @@ namespace HelpdeskSystem.Controllers
             ticket.Descricao = ticketvm.Descricao;
             ticket.StatusId = pending.Id;
             ticket.SubCategoryId = ticketvm.SubCategoriaId;
+            ticket.Anexo = ticketvm.Anexo;
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ticket.CriadoEm = DateTime.Now;
             ticket.CriadoPorId = userId; 

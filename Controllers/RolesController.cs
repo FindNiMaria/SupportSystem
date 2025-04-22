@@ -1,0 +1,51 @@
+﻿using HelpdeskSystem.Data;
+using HelpdeskSystem.Models;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace HelpdeskSystem.Controllers
+{
+    public class RolesController : Controller
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _rolemanager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
+        public RolesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> rolemanager, SignInManager<ApplicationUser> signInManager)
+        {
+            _rolemanager = rolemanager;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _context = context;
+        }
+        public async Task<ActionResult> Index()
+        {
+            var roles = await _context.Roles.ToListAsync();
+            return View(roles);
+        }
+        [HttpGet]
+        public async Task<ActionResult> Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> Create(RolesViewModel vm)
+        {
+            IdentityRole role = new();
+            role.Name = vm.NomePermissao;
+
+            var result = await _rolemanager.CreateAsync(role);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(vm);
+            }
+                
+        }
+    }
+}

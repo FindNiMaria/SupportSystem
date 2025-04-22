@@ -21,6 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<OSCategory> OSCategories { get; set; }
     public DbSet<SystemCode> systemCodes { get; set; }
     public DbSet<SystemCodeDetail> systemCodeDetails { get; set; }
+    public DbSet<Department> Departments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

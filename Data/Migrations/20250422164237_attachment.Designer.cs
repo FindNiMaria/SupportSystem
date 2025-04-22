@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422164237_attachment")]
+    partial class attachment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,44 +177,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.HasIndex("IdChamado");
 
                     b.ToTable("Comment");
-                });
-
-            modelBuilder.Entity("HelpdeskSystem.Models.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Codigo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CriadoPorId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("ModificadoEm")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModificadoPorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CriadoPorId");
-
-                    b.HasIndex("ModificadoPorId");
-
-                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.OS", b =>
@@ -714,23 +679,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Navigation("CriadoPor");
 
                     b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("HelpdeskSystem.Models.Department", b =>
-                {
-                    b.HasOne("HelpdeskSystem.Models.ApplicationUser", "CriadoPor")
-                        .WithMany()
-                        .HasForeignKey("CriadoPorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HelpdeskSystem.Models.ApplicationUser", "ModificadoPor")
-                        .WithMany()
-                        .HasForeignKey("ModificadoPorId");
-
-                    b.Navigation("CriadoPor");
-
-                    b.Navigation("ModificadoPor");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.OS", b =>

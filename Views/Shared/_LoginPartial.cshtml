@@ -148,6 +148,15 @@
                 </p>
             </a>
         </li>
+        <!--Menu Permissões-->
+        <li class="nav-item">
+            <a asp-controller="Roles" asp-action="Index" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                    Permissões de Usuário
+                </p>
+            </a>
+        </li>
         <!--Logout-->
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">

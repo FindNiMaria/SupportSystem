@@ -28,5 +28,8 @@ namespace HelpdeskSystem.Models
         [DisplayName("Sub-Categoria: ")]
         public int? SubCategoryId { get; set; }
         public TicketSubCategory SubCategory { get; set;}
+
+        [DisplayName("Anexo: ")]
+        public String Anexo { get; set; }
     }
 }

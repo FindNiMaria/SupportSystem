@@ -34,7 +34,8 @@ namespace HelpdeskSystem.ViewModels
         [DisplayName("Sub-Categoria")]
         public int SubCategoriaId { get; set; }
         public TicketSubCategory SubCategoria { get; set; }
-
+        [DisplayName("Anexo: ")]
+        public String Anexo { get; set; }
         public List<Ticket> Tickets { get; set; }
     }
 }
