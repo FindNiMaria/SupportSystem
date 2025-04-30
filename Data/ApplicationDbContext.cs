@@ -41,7 +41,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Comment>()
             .HasOne(c => c.Ticket)
-            .WithMany()
+            .WithMany(c => c.TicketComments)
             .HasForeignKey(c => c.IdChamado)
             .OnDelete(DeleteBehavior.Restrict);
 

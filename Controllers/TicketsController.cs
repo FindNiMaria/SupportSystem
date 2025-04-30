@@ -10,6 +10,11 @@ using HelpdeskSystem.Models;
 using System.Security.Claims;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using HelpdeskSystem.ViewModels;
+using System.Net.Mail;
+using MailKit.Net.Imap;
+using MailKit.Search;
+using MailKit;
+using HelpdeskSystem.Services;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -17,51 +22,94 @@ namespace HelpdeskSystem.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
-        public TicketsController(ApplicationDbContext context, IConfiguration configuration)
+        private readonly IEmailTicketService _emailTicketService;
+        public TicketsController(ApplicationDbContext context, IConfiguration configuration, IEmailTicketService emailTicketService)
         {
 
             _context = context;
             _configuration = configuration;
+            _emailTicketService = emailTicketService;
         }
 
+        public async Task<IActionResult> ImportEmails()
+        {
+            await _emailTicketService.ImportarEmailsComoTicketsAsync();
+            return RedirectToAction("Index");
+        }
         // GET: Tickets
         public async Task<IActionResult> Index(TicketViewModel vm)
         {
             vm.Tickets = await _context.Tickets
                 .Include(t => t.CriadoPor)
-                .Include(t=> t.SubCategory)
+                .Include(t => t.SubCategory)
+                .Include(t => t.Status)
+                .Include(t => t.Prioridade)
+                .Include(t => t.TicketComments)
                 .OrderBy(x => x.CriadoEm)
                 .ToListAsync();
 
             return View(vm);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddComment(int id, TicketViewModel vm)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Comment newcomment = new();
+            newcomment.IdChamado = id;
+            newcomment.CriadoPorId = userId;
+            newcomment.CriadoEm = DateTime.Now;
+            newcomment.Descricao = vm.DescricaoComentario;
+            _context.Add(newcomment);
+            await _context.SaveChangesAsync();
+            //Registrar no Log de Auditoria
+
+            var activity = new AuditTrail
+            {
+                Action = "Criar",
+                TimeStamp = DateTime.Now,
+                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                UserId = userId,
+                Module = "Comentário",
+                AffectedTable = "Comentário"
+            };
+            _context.Add(activity);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Details", new { id = id });
+        }
         // GET: Tickets/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        public async Task<IActionResult> Details(int id, TicketViewModel vm)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
+            vm.DetalhesChamado = await _context.Tickets
+            .Include(t => t.CriadoPor)
+            .Include(t => t.SubCategory)
+            .Include(t => t.Status)
+            .Include(t => t.Prioridade)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+            vm.ObservacoesChamado = await _context.Comment
                 .Include(t => t.CriadoPor)
-                .Include(t => t.SubCategory)
-                .Include(t => t.Status)
-                .Include(t=> t.Prioridade)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (ticket == null)
+                .Include(t => t.Ticket)
+                .Where(t => t.IdChamado == id)
+                .ToListAsync();
+            if (vm.DetalhesChamado == null)
             {
                 return NotFound();
             }
 
-            return View(ticket);
+            return View(vm);
         }
 
         // GET: Tickets/Create
         public IActionResult Create()
         {
-            ViewData["PrioridadeId"] = new SelectList(_context.systemCodeDetails.Include(x=> x.SystemCode).Where(x => x.SystemCode.Codigo == "Prioridade"), "Id", "Descricao");
+            ViewData["PrioridadeId"] = new SelectList(_context.systemCodeDetails.Include(x => x.SystemCode).Where(x => x.SystemCode.Codigo == "Prioridade"), "Id", "Descricao");
             ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName");
             ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");
             ViewBag.Categorias = new SelectList(_context.TicketCategories, "Id", "Nome");
@@ -75,14 +123,14 @@ namespace HelpdeskSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( TicketViewModel ticketvm, IFormFile anexo)
+        public async Task<IActionResult> Create(TicketViewModel ticketvm, IFormFile anexo)
         {
             if (anexo.Length > 0)
             {
-                var filename = "TicketAttachment"+DateTime.Now.ToString("yyyymmddhhmmss");
+                var filename = "TicketAttachment" + DateTime.Now.ToString("yyyymmddhhmmss");
                 var path = _configuration["FileSettings:UploadsFolder"]!;
                 var filepath = Path.Combine(path, filename);
-                var stream = new FileStream(filepath,FileMode.Create);
+                var stream = new FileStream(filepath, FileMode.Create);
                 await anexo.CopyToAsync(stream);
                 ticketvm.Anexo = filename;
             }
@@ -108,7 +156,7 @@ namespace HelpdeskSystem.Controllers
             ticket.Anexo = ticketvm.Anexo;
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ticket.CriadoEm = DateTime.Now;
-            ticket.CriadoPorId = userId; 
+            ticket.CriadoPorId = userId;
             _context.Add(ticket);
             await _context.SaveChangesAsync();
 
@@ -124,6 +172,12 @@ namespace HelpdeskSystem.Controllers
                 AffectedTable = "Tickets"
             };
             _context.Add(activity);
+            await _emailTicketService.EnviarEmailAsync(
+                    para: User.FindFirstValue(ClaimTypes.Email),
+                    assunto: $"Chamado nº {ticket.Id} criado",
+                    mensagem: $"Seu chamado \"{ticket.Titulo}\" foi criado com sucesso e está com status Pendente."
+);
+
             await _context.SaveChangesAsync();
             ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", ticket.CriadoPorId);
             ViewData["CategoriaId"] = new SelectList(_context.TicketCategories, "Id", "Nome");

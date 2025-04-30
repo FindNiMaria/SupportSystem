@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
+using HelpdeskSystem.Data.Migrations;
+using System.Net.Sockets;
+using System.Security.Claims;
 
 namespace HelpdeskSystem.Controllers
 {
@@ -59,17 +62,15 @@ namespace HelpdeskSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Codigo,Nome,CriadoPorId,CriadoEm,ModificadoPorId,ModificadoEm")] Department department)
+        public async Task<IActionResult> Create(Department department)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(department);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.CriadoPorId);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.ModificadoPorId);
-            return View(department);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            department.CriadoEm = DateTime.Now;
+            department.CriadoPorId = userId;
+            _context.Add(department);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
         }
 
         // GET: Departments/Edit/5

@@ -88,9 +88,6 @@ namespace HelpdeskSystem.Controllers
             _context.Add(activity);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CriadoPorId);
-            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.IdChamado);
         }
 
         // GET: Comments/Edit/5

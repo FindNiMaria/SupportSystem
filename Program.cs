@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
 using Microsoft.Extensions.DependencyInjection;
+using HelpdeskSystem.Services;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddDefaultUI();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+// appsettings.json > EmailSettings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<EmailSettings>>().Value);
+
+// Registrar o serviço que envia/recebe emails
+builder.Services.AddScoped<IEmailTicketService, EmailTicketService>();
+
 
 
 var app = builder.Build();

@@ -30,6 +30,8 @@ namespace HelpdeskSystem.Models
         public TicketSubCategory SubCategory { get; set;}
 
         [DisplayName("Anexo: ")]
-        public String Anexo { get; set; }
+        public String? Anexo { get; set; }
+
+        public ICollection<Comment> TicketComments { get; set; }
     }
 }

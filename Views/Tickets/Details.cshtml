@@ -1,4 +1,4 @@
-﻿@model HelpdeskSystem.Models.Ticket
+﻿@model HelpdeskSystem.ViewModels.TicketViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -10,71 +10,122 @@
     <div class="card-header">
         <h3 class="card-title">Detalhes do Chamados: </h3>
     </div>
-    <div class="card-body">
-        <table id="example1" class="table table-bordered table-striped">
-            <tr>           
-                <th>
-                    @Html.DisplayNameFor(model => model.Titulo)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.Titulo)
-                </td>
-
-                <th>
-                    @Html.DisplayNameFor(model => model.Descricao)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.Descricao)
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.StatusId)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.Status.Descricao)
-                </td>
-            
-                <th>
-                    @Html.DisplayNameFor(model => model.PrioridadeId)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.Prioridade.Descricao)
-                </td>
-            </tr>
-            <tr>
-               <th>
-                    @Html.DisplayNameFor(model => model.CriadoPor)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.CriadoPor.FullName)
-                </td>
-
-                <th>
-                    @Html.DisplayNameFor(model => model.CriadoEm)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.CriadoEm)
-                </td>
-            </tr>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Anexo)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.Anexo)
-                </td>
-                <th>
-                    @Html.DisplayNameFor(model => model.SubCategoryId)
-                </th>
-                <td>
-                    @Html.DisplayFor(model => model.SubCategory.Name)
-                </td>
-            </tr>
-        </table>
+    <div class="row">
+        <div class="col md-6">
+            <table id="example1" class="table table-bordered table-striped">
+                <tr>           
+                    <th>
+                        @Html.DisplayNameFor(model => model.Titulo)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.Titulo)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Descricao)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.Descricao)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StatusId)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.Status.Descricao)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PrioridadeId)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.Prioridade.Descricao)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoPor)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.CriadoPor.FullName)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CriadoEm)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.CriadoEm)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Anexo)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.Anexo)
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SubCategoriaId)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(model => model.DetalhesChamado.SubCategory.Name)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h4> Observações de chamados </h4>
+            <table id="example1" class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ObservacaoChamado.Descricao)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ObservacaoChamado.CriadoPor)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ObservacaoChamado.CriadoEm)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ObservacoesChamado)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Descricao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CriadoEm)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table> 
+            <form asp-action="AddComment" method="post" enctype="multipart/form-data">
+                <input type="hidden"class="hidden" asp-for="Id" />
+                <div class="row mt-3 me-1">
+                    <div class="col-12">
+                        <label class="control-label">Insira uma observação:</label>
+                        <textarea asp-for="DescricaoComentario" class="form-control w-100" rows="4"></textarea>
+                        <button class="btn btn-primary mt-3 mb-3">Adicionar Observação</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
 <div>
-    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
     <a class="btn btn-primary" asp-action="Index">Voltar a Lista</a>
 </div>
