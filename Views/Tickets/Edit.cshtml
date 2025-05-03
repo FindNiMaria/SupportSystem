@@ -1,57 +1,47 @@
-﻿@model HelpdeskSystem.Models.Ticket
+﻿@model HelpdeskSystem.Models.Ticket;
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Chamado";
 }
 
 <h1>Editar</h1>
 
-<h4>Chamado</h4>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="Titulo" class="control-label"></label>
-                        <input asp-for="Titulo" class="form-control" />
-                        <span asp-validation-for="Titulo" class="text-danger"></span>
+                        <label asp-for="Title" class="control-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="Descricao" class="control-label"></label>
-                        <input asp-for="Descricao" class="form-control" />
-                        <span asp-validation-for="Descricao" class="text-danger"></span>
+                        <label asp-for="Description" class="control-label"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="StatusId" class="control-label"></label>
-                        <input asp-for="StatusId" class="form-control" />
-                        <span asp-validation-for="StatusId" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="CategoriaId" class="control-label"></label>
-                        <select asp-for="CategoriaId" id="CategoriaId" class="form-control" asp-items="ViewBag.Categorias">
+                        <label asp-for="CategoryId" class="control-label"></label>
+                        <select asp-for="CategoryId" id="CategoriaId" class="form-control" asp-items="ViewBag.CategoryId">
                             <option value="">-- Selecione uma Categoria --</option>
                         </select>
-                        <span asp-validation-for="CategoriaId" class="text-danger"></span>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label asp-for="SubCategoryId" class="control-label"></label>
-                        <select asp-for="SubCategoryId" id="SubCategoriaId" class="form-control" asp-items="ViewBag.SubCategorias">
+                        <select asp-for="SubCategoryId" id="SubCategoriaId" class="form-control">
                             <option value="">-- Selecione uma Subcategoria --</option>
                         </select>
                         <span asp-validation-for="SubCategoryId" class="text-danger"></span>
@@ -62,39 +52,23 @@
                     <div class="form-group">
                         <label>Prioridade</label>
                         <select id="PrioridadeSelect" class="form-control" disabled>
-                            @if (ViewBag.Prioridades != null)
-                            {
-                                foreach (var item in (SelectList)ViewBag.Prioridades)
-                                {
-                                    var selected = item.Value == Model.PrioridadeId.ToString() ? "selected" : "";
-                                    <option value="@item.Value" selected="@selected">@item.Text</option>
-                                }
-                            }
+                            <option value="">-- Selecione uma Prioridade --</option>
                         </select>
-                        <input type="hidden" asp-for="PrioridadeId" />
-                        <span asp-validation-for="PrioridadeId" class="text-danger"></span>
+                        <input type="hidden" asp-for="PriorityId" />
+                        <span asp-validation-for="PriorityId" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="CriadoPorId" class="control-label"></label>
-                        <select asp-for="CriadoPorId" class="form-control" asp-items="ViewBag.CriadoPorId"></select>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="CriadoEm" class="control-label"></label>
-                        <input asp-for="CriadoEm" class="form-control" />
-                        <span asp-validation-for="CriadoEm" class="text-danger"></span>
+                        <label asp-for="Attachment" class="control-label"></label>
+                        <input id="Anexo" type="file" class="form-control" name="Anexo" accept=".png,.jpg,.jpeg,.pdf" />
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Salvar" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                <input type="submit" value="Editar" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -105,25 +79,47 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
+        $(document).ready(function () {
+            const categoriaSelecionada = $('#CategoriaId').val();
+            const subCategoriaSelecionada = '@Model.SubCategoryId';
+            const prioridadeSelecionada = '@Model.PriorityId';
+
+            if (categoriaSelecionada) {
+                $('#CategoriaId').trigger('change');
+
+                // Delay para aguardar as subcategorias carregarem
+                setTimeout(() => {
+                    if (subCategoriaSelecionada) {
+                        $('#SubCategoriaId').val(subCategoriaSelecionada);
+                    }
+
+                    if (prioridadeSelecionada) {
+                        $('input[name="PriorityId"]').val(prioridadeSelecionada);
+                    }
+                }, 500);
+            }
+        });
+
         $('#CategoriaId').change(function () {
             const categoriaId = $(this).val();
 
             if (categoriaId) {
-                // Atualiza prioridade
+                // Buscar prioridade da categoria
                 $.get('/Data/GetCategoriaPrioridade', { categoriaId: categoriaId }, function (data) {
                     if (data && data.id && data.descricao) {
                         $('#PrioridadeSelect').html(`<option selected>${data.descricao}</option>`);
-                        $('input[name="PrioridadeId"]').val(data.id);
+                        $('input[name="PriorityId"]').val(data.id);
+                    } else {
+                        $('#PrioridadeSelect').html('<option>-- Sem prioridade --</option>');
+                        $('input[name="PriorityId"]').val('');
                     }
                 });
 
-                // Atualiza subcategorias
+                // Buscar subcategorias da categoria
                 $.get('/Data/GetTicketSubCategories', { Id: categoriaId }, function (data) {
                     let options = '<option value="">-- Selecione uma Subcategoria --</option>';
                     $.each(data, function (index, item) {
@@ -132,9 +128,9 @@
                     $('#SubCategoriaId').html(options);
                 });
             } else {
-                $('#PrioridadeSelect').html('<option value="">-- Selecione uma Prioridade --</option>');
-                $('input[name="PrioridadeId"]').val('');
-                $('#SubCategoriaId').html('<option value="">-- Selecione uma Subcategoria --</option>');
+                $('#PrioridadeSelect').html('<option>-- Selecione uma Prioridade --</option>');
+                $('input[name="PriorityId"]').val('');
+                $('#SubCategoriaId').html('<option>-- Selecione uma Subcategoria --</option>');
             }
         });
     </script>

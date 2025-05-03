@@ -1,10 +1,17 @@
-﻿namespace HelpdeskSystem.Models
+﻿using System.ComponentModel;
+
+namespace HelpdeskSystem.Models
 {
     public class SystemCode : UserActivity
     {
+        [DisplayName("ID")]
         public int Id { get; set; }
-        public string Codigo { get; set; }
-        public string Descricao { get; set; }
+
+        [DisplayName("Código")]
+        public string Code { get; set; }
+
+        [DisplayName("Descrição")]
+        public string Description { get; set; }
 
     }
 }

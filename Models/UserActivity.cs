@@ -2,11 +2,11 @@
 {
     public class UserActivity
     {
-        public string CriadoPorId { get; set; }
-        public ApplicationUser CriadoPor { get; set; }
-        public DateTime CriadoEm { get; set; }
-        public string? ModificadoPorId { get; set; }
-        public ApplicationUser ModificadoPor { get; set; }
-        public DateTime? ModificadoEm { get; set; }
+        public string CreatedById { get; set; }
+        public ApplicationUser CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? ModifiedById { get; set; }
+        public ApplicationUser ModifiedBy { get; set; }
+        public DateTime? ModifiedOn { get; set; }
     }
 }

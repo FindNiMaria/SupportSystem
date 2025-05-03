@@ -3,14 +3,13 @@
     public class EmailSettings
     {
         public string SmtpServer { get; set; }
-        public int Port { get; set; }
+        public int SmtpPort { get; set; }
         public string SenderName { get; set; }
         public string SenderEmail { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public bool UseSSL { get; set; }
 
-        // Adicional para leitura de e-mails (IMAP)
         public string ImapServer { get; set; }
         public int ImapPort { get; set; }
     }

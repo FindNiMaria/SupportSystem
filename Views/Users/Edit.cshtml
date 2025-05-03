@@ -10,22 +10,22 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="PrimeiroNome" class="control-label"></label>
-                                    <input asp-for="PrimeiroNome" class="form-control" />
-                                    <span asp-validation-for="PrimeiroNome" class="text-danger"></span>
+                                    <label asp-for="FirstName" class="control-label"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="Sobrenome" class="control-label"></label>
-                                    <input asp-for="Sobrenome" class="form-control" />
-                                    <span asp-validation-for="Sobrenome" class="text-danger"></span>
+                                    <label asp-for="LastName" class="control-label"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -51,29 +51,29 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="Pais" class="control-label"></label>
-                                    <input asp-for="Pais" class="form-control" />
-                                    <span asp-validation-for="Pais" class="text-danger"></span>
+                                    <label asp-for="Country" class="control-label"></label>
+                                    <input asp-for="Country" class="form-control" />
+                                    <span asp-validation-for="Country" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="Cidade" class="control-label"></label>
-                                    <input asp-for="Cidade" class="form-control" />
-                                    <span asp-validation-for="Cidade" class="text-danger"></span>
+                                    <label asp-for="City" class="control-label"></label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label asp-for="Genero" class="control-label"></label>
-                                    <input asp-for="Genero" class="form-control" />
-                                    <span asp-validation-for="Genero" class="text-danger"></span>
+                                    <label asp-for="Gender" class="control-label"></label>
+                                    <input asp-for="Gender" class="form-control" />
+                                    <span asp-validation-for="Gender" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="PasswordHash" class="control-label"></label>
-                                    <input asp-for="PasswordHash" class="form-control" />
+                                    <input type="password" asp-for="PasswordHash" class="form-control" />
                                     <span asp-validation-for="PasswordHash" class="text-danger"></span>
                                 </div>
                             </div>

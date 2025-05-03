@@ -8,12 +8,12 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Detalhes do Chamados: </h3>
+        <h3 class="card-title">Resolução do Chamado: </h3>
     </div>
     <div class="row">
         <div class="col md-6">
             <table id="example1" class="table table-bordered table-striped">
-                <tr>           
+                <tr>
                     <th>
                         @Html.DisplayNameFor(model => model.Title)
                     </th>
@@ -78,6 +78,44 @@
                     </td>
                 </tr>
             </table>
+            <h4> Histórico do Chamado </h4>
+            <table id="example1" class="table table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Resolution.CreatedBy)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Resolution.CreatedOn)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Resolution.Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Resolution.Status)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.TicketResolutions)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreatedOn)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status.Description)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
         <div class="col-md-6">
             <h4> Observações de chamados </h4>
@@ -111,15 +149,20 @@
                         </tr>
                     }
                 </tbody>
-            </table> 
-            <form asp-action="AddComment" method="post" enctype="multipart/form-data">
-                <input type="hidden"class="hidden" asp-for="Id" />
+            </table>
+
+            <form asp-action="AssignmentConfirmed" method="post" enctype="multipart/form-data">
+                <input type="hidden" class="hidden" asp-for="Id" />
                 <div class="row mt-3 me-1">
-                    <div class="col-12">
-                        <label class="control-label">Insira uma observação:</label>
-                        <textarea asp-for="TicketDescription" class="form-control w-100" rows="4"></textarea>
-                        <button class="btn btn-primary mt-3 mb-3">Adicionar Observação</button>
+                    <div class="row">
+                        <label class="control-label">Atribuir chamado a:</label>
+                        <select asp-for="AssignedToId" class="form-control" asp-items="ViewBag.UserId"></select>
                     </div>
+                    <div class="row">
+                        <label class="control-label">Insira uma observação final:</label>
+                        <textarea asp-for="TicketDescription" class="form-control w-100" rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary mt-3 mb-3">Resolver</button>
                 </div>
             </form>
         </div>

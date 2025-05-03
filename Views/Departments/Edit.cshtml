@@ -14,34 +14,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Codigo" class="control-label"></label>
-                <input asp-for="Codigo" class="form-control" />
-                <span asp-validation-for="Codigo" class="text-danger"></span>
+                <label asp-for="Code" class="control-label"></label>
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Nome" class="control-label"></label>
-                <input asp-for="Nome" class="form-control" />
-                <span asp-validation-for="Nome" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CriadoPorId" class="control-label"></label>
-                <select asp-for="CriadoPorId" class="form-control" asp-items="ViewBag.CriadoPorId"></select>
-                <span asp-validation-for="CriadoPorId" class="text-danger"></span>
+                <label asp-for="CreatedById" class="control-label"></label>
+                <select asp-for="CreatedById" class="form-control" asp-items="ViewBag.CriadoPorId"></select>
+                <span asp-validation-for="CreatedById" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CriadoEm" class="control-label"></label>
-                <input asp-for="CriadoEm" class="form-control" />
-                <span asp-validation-for="CriadoEm" class="text-danger"></span>
+                <label asp-for="CreatedOn" class="control-label"></label>
+                <input asp-for="CreatedOn" class="form-control" />
+                <span asp-validation-for="CreatedOn" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ModificadoPorId" class="control-label"></label>
-                <select asp-for="ModificadoPorId" class="form-control" asp-items="ViewBag.ModificadoPorId"></select>
-                <span asp-validation-for="ModificadoPorId" class="text-danger"></span>
+                <label asp-for="ModifiedById" class="control-label"></label>
+                <select asp-for="ModifiedById" class="form-control" asp-items="ViewBag.ModificadoPorId"></select>
+                <span asp-validation-for="ModifiedById" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ModificadoEm" class="control-label"></label>
-                <input asp-for="ModificadoEm" class="form-control" />
-                <span asp-validation-for="ModificadoEm" class="text-danger"></span>
+                <label asp-for="ModifiedOn" class="control-label"></label>
+                <input asp-for="ModifiedOn" class="form-control" />
+                <span asp-validation-for="ModifiedOn" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

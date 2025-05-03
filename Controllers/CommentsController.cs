@@ -23,14 +23,14 @@ namespace HelpdeskSystem.Controllers
         // GET: Comments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Comment_1.Include(c => c.CriadoPor).Include(c => c.Ticket);
+            var applicationDbContext = _context.Comment_1.Include(c => c.CreatedBy).Include(c => c.Ticket);
             return View(await applicationDbContext.ToListAsync());
         }
         // GET: Comments Criar
         public async Task<IActionResult> TicketComment(int Id)
         {
-            var comments = await _context.Comment_1.Where(x=>x.IdChamado == Id)
-                .Include(c => c.CriadoPor)
+            var comments = await _context.Comment_1.Where(x=>x.TicketId == Id)
+                .Include(c => c.CreatedBy)
                 .Include(c => c.Ticket).ToListAsync();
             return View(comments);
         }
@@ -43,7 +43,7 @@ namespace HelpdeskSystem.Controllers
             }
 
             var comment = await _context.Comment_1
-                .Include(c => c.CriadoPor)
+                .Include(c => c.CreatedBy)
                 .Include(c => c.Ticket)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)
@@ -70,8 +70,8 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Create(Comment comment)
         {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                comment.CriadoPorId = userId;
-                comment.CriadoEm = DateTime.Now;
+                comment.CreatedById = userId;
+                comment.CreatedOn = DateTime.Now;
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
             //Registrar no Log de Auditoria
@@ -103,8 +103,8 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CriadoPorId);
-            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.IdChamado);
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CreatedById);
+            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.TicketId);
             return View(comment);
         }
 
@@ -153,8 +153,8 @@ namespace HelpdeskSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CriadoPorId);
-            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.IdChamado);
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CreatedById);
+            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.TicketId);
             return View(comment);
         }
 
@@ -167,7 +167,7 @@ namespace HelpdeskSystem.Controllers
             }
 
             var comment = await _context.Comment_1
-                .Include(c => c.CriadoPor)
+                .Include(c => c.CreatedBy)
                 .Include(c => c.Ticket)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (comment == null)

@@ -14,77 +14,45 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<Comment> Comment { get; set; }
     public DbSet<AuditTrail> AuditTrails { get; set; }
-    public DbSet<OS> OS { get; set; }
-    public DbSet<OSComments> OSComments { get; set; }
     public DbSet<TicketCategory> TicketCategories{ get; set; }
     public DbSet<TicketSubCategory> TicketSubCategories { get; set; }
-    public DbSet<OSCategory> OSCategories { get; set; }
     public DbSet<SystemCode> systemCodes { get; set; }
     public DbSet<SystemCodeDetail> systemCodeDetails { get; set; }
     public DbSet<Department> Departments { get; set; }
+    public DbSet<TicketResolution> TicketResolutions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
         builder.Entity<Ticket>()
-            .HasOne(c => c.CriadoPor)
+            .HasOne(c => c.CreatedBy)
             .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<OS>()
-            .HasOne(c => c.CriadoPor)
-            .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
+            .HasForeignKey(c => c.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Comment>()
             .HasOne(c => c.Ticket)
             .WithMany(c => c.TicketComments)
-            .HasForeignKey(c => c.IdChamado)
+            .HasForeignKey(c => c.TicketId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Comment>()
-            .HasOne(c => c.CriadoPor)
+            .HasOne(c => c.CreatedBy)
             .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<OSComments>()
-           .HasOne(c => c.OS)
-           .WithMany()
-           .HasForeignKey(c => c.IdOS)
-           .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<OSComments>()
-            .HasOne(c => c.CriadoPor)
-            .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
+            .HasForeignKey(c => c.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<TicketCategory>()
-            .HasOne(c => c.ModificadoPor)
+            .HasOne(c => c.ModifiedBy)
             .WithMany()
-            .HasForeignKey(c => c.ModificadoPorId)
+            .HasForeignKey(c => c.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<TicketCategory>()
-            .HasOne(c => c.CriadoPor)
+            .HasOne(c => c.CreatedBy)
             .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<OSCategory>()
-            .HasOne(c => c.ModificadoPor)
-            .WithMany()
-            .HasForeignKey(c => c.ModificadoPorId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<OSCategory>()
-            .HasOne(c => c.CriadoPor)
-            .WithMany()
-            .HasForeignKey(c => c.CriadoPorId)
+            .HasForeignKey(c => c.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<SystemCodeDetail>()
@@ -93,9 +61,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(c => c.SystemCodeId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Ticket>()
-            .HasOne(c => c.Prioridade)
+            .HasOne(c => c.Priority)
             .WithMany()
-            .HasForeignKey(c => c.PrioridadeId)
+            .HasForeignKey(c => c.PriorityId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Ticket>()
             .HasOne(c => c.Status)
@@ -103,24 +71,29 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(c => c.StatusId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Entity<TicketCategory>()
-        .HasOne(c => c.PrioridadePadrao)
+        .HasOne(c => c.DefautPriority)
         .WithMany()
-        .HasForeignKey(c => c.PrioridadePadraoId)
+        .HasForeignKey(c => c.DefaultPriorityId)
         .OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Ticket>()
-        .HasOne(t => t.Categoria)
+        .HasOne(t => t.Category)
         .WithMany()
-        .HasForeignKey(t => t.CategoriaId)
+        .HasForeignKey(t => t.CategoryId)
         .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<TicketCategory>()
-            .HasOne(tc => tc.PrioridadePadrao)
+            .HasOne(tc => tc.DefautPriority)
             .WithMany()
-            .HasForeignKey(tc => tc.PrioridadePadraoId)
+            .HasForeignKey(tc => tc.DefaultPriorityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<TicketResolution>()
+            .HasOne(tr => tr.Status)
+            .WithMany()
+            .HasForeignKey(tr => tr.StatusId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 
 public DbSet<HelpdeskSystem.Models.Comment> Comment_1 { get; set; } = default!;
 
-public DbSet<HelpdeskSystem.Models.OSComments> OSComments_1 { get; set; } = default!;
 }

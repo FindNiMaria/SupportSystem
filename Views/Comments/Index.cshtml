@@ -19,16 +19,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Descricao)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ticket)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CriadoEm)
+                @Html.DisplayNameFor(model => model.CreatedOn)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CriadoPor)
+                @Html.DisplayNameFor(model => model.CreatedBy)
             </th>
             <th>Editar</th>
             <th>Ver</th>
@@ -39,16 +39,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
+                @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Ticket.Titulo)
+                @Html.DisplayFor(modelItem => item.Ticket.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadoEm)
+                @Html.DisplayFor(modelItem => item.CreatedOn)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+                @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
             </td>
             <td>
                 <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>

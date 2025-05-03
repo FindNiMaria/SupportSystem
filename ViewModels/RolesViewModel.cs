@@ -8,6 +8,6 @@ namespace HelpdeskSystem.ViewModels
         public string Id { get; set; }
 
         [DisplayName("Permissão")]
-        public string NomePermissao { get; set; }
+        public string Permission { get; set; }
     }
 }

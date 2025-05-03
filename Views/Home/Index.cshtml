@@ -77,19 +77,19 @@
                         @Html.DisplayNameFor(model => model.Id)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Titulo)
+                        @Html.DisplayNameFor(model => model.Title)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Status)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Prioridade)
+                        @Html.DisplayNameFor(model => model.Priority)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CriadoPor)
+                        @Html.DisplayNameFor(model => model.CreatedBy)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CriadoEm)
+                        @Html.DisplayNameFor(model => model.CreatedOn)
                     </th>
                     <th>Ver</th>
                     <th>Comentar</th>
@@ -105,19 +105,19 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Prioridade)
+                @Html.DisplayFor(modelItem => item.Priority)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
+                @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadoEm)
+                @Html.DisplayFor(modelItem => item.CreatedOn)
             </td>
             <td>
                 <a class="btn btn-primary" asp-controller="Tickets"asp-action="Details" asp-route-id="@item.Id">Detalhes</a>

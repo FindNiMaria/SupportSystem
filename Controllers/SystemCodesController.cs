@@ -25,7 +25,7 @@ namespace HelpdeskSystem.Controllers
         {
             var systemCodes = await _context
                 .systemCodes
-                .Include(x=>x.CriadoPor)
+                .Include(x=>x.CreatedBy)
                 .ToListAsync();
 
 
@@ -65,8 +65,8 @@ namespace HelpdeskSystem.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            systemCode.CriadoEm = DateTime.Now;
-            systemCode.CriadoPorId = userId;
+            systemCode.CreatedOn = DateTime.Now;
+            systemCode.CreatedById = userId;
             _context.Add(systemCode);
             await _context.SaveChangesAsync();
             var activity = new AuditTrail
@@ -107,38 +107,25 @@ namespace HelpdeskSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SystemCode systemCode)
         {
+            // Verifique os valores de id e systemCodeDetail.Id para garantir que eles são iguais
+            Console.WriteLine($"id: {id}, systemCodeDetail.Id: {systemCode.Id}");
 
             if (id != systemCode.Id)
             {
                 return NotFound();
             }
+            var existing = await _context.systemCodeDetails.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            existing.Code = systemCode.Code; // Exemplo, substitua pelos campos reais
+            existing.Description = systemCode.Description; // idem
+            existing.ModifiedOn = DateTime.Now;
+            existing.ModifiedById = userId;
+            _context.Entry(existing).Property(x => x.CreatedById).IsModified = false;
+            _context.Entry(existing).Property(x => x.CreatedOn).IsModified = false;
 
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    systemCode.ModificadoEm = DateTime.Now;
-                    systemCode.ModificadoPorId = userId;
-                    _context.Update(systemCode);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SystemCodeExists(systemCode.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-            }
-            return View(systemCode);
+            _context.Update(existing);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: SystemCodes/Delete/5

@@ -25,7 +25,7 @@ namespace HelpdeskSystem.Controllers
         // GET: Departments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Departments.Include(d => d.CriadoPor).Include(d => d.ModificadoPor);
+            var applicationDbContext = _context.Departments.Include(d => d.CreatedBy).Include(d => d.ModifiedBy);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -38,8 +38,8 @@ namespace HelpdeskSystem.Controllers
             }
 
             var department = await _context.Departments
-                .Include(d => d.CriadoPor)
-                .Include(d => d.ModificadoPor)
+                .Include(d => d.CreatedBy)
+                .Include(d => d.ModifiedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
@@ -65,8 +65,8 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Create(Department department)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            department.CriadoEm = DateTime.Now;
-            department.CriadoPorId = userId;
+            department.CreatedOn = DateTime.Now;
+            department.CreatedById = userId;
             _context.Add(department);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -86,8 +86,8 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.CriadoPorId);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.ModificadoPorId);
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.CreatedById);
+            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.ModifiedById);
             return View(department);
         }
 
@@ -123,8 +123,8 @@ namespace HelpdeskSystem.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.CriadoPorId);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.ModificadoPorId);
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.CreatedById);
+            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", department.ModifiedById);
             return View(department);
         }
 
@@ -137,8 +137,8 @@ namespace HelpdeskSystem.Controllers
             }
 
             var department = await _context.Departments
-                .Include(d => d.CriadoPor)
-                .Include(d => d.ModificadoPor)
+                .Include(d => d.CreatedBy)
+                .Include(d => d.ModifiedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {

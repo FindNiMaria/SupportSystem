@@ -51,16 +51,16 @@ namespace HelpdeskSystem.Controllers
             {
                 var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 ApplicationUser registereduser = new();
-                registereduser.PrimeiroNome = user.PrimeiroNome;
+                registereduser.FirstName = user.FirstName;
                 registereduser.UserName = user.UserName;
-                registereduser.Sobrenome = user.Sobrenome;
+                registereduser.LastName = user.LastName;
                 registereduser.NormalizedUserName = user.UserName;
                 registereduser.Email = user.Email;
                 registereduser.EmailConfirmed = true;
                 registereduser.PhoneNumber = user.PhoneNumber;
-                registereduser.Genero = user.Genero;
-                registereduser.Pais = user.Pais;
-                registereduser.Cidade = user.Cidade;
+                registereduser.Gender = user.Gender;
+                registereduser.Country = user.Country;
+                registereduser.City = user.City;
                 var result = await _userManager.CreateAsync(registereduser, user.PasswordHash);
                 if(result.Succeeded)
                 {
@@ -93,25 +93,73 @@ namespace HelpdeskSystem.Controllers
         }
 
         // GET: UsersController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
         {
-            return View();
+            // Obter o usuário atual (pode ser feito com User.Identity.Name ou um Id específico)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user); // Passa o usuário para a view
         }
 
         // POST: UsersController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(string id, ApplicationUser userModel, string currentPassword, string newPassword, string confirmNewPassword)
+{
+    // Encontra o usuário pelo ID
+    var user = await _userManager.FindByIdAsync(id.ToString());
+    if (user == null)
+    {
+        return NotFound(); // Se o usuário não for encontrado
+    }
+
+    // Atualiza as informações do usuário
+    user.FirstName = userModel.FirstName;
+    user.LastName = userModel.LastName;
+    user.Email = userModel.Email;
+    user.PhoneNumber = userModel.PhoneNumber;
+    user.Country = userModel.Country;
+    user.City = userModel.City;
+    user.Gender = userModel.Gender;
+
+    // Verifica se o usuário deseja alterar a senha
+    if (!string.IsNullOrEmpty(currentPassword) && !string.IsNullOrEmpty(newPassword) && newPassword == confirmNewPassword)
+    {
+        // Tenta alterar a senha
+        var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+        if (!result.Succeeded)
         {
-            try
+            // Se houver erros ao tentar alterar a senha
+            foreach (var error in result.Errors)
             {
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(string.Empty, error.Description);
             }
-            catch
-            {
-                return View();
-            }
+            return View(userModel); // Retorna para a view com os erros de senha
         }
+    }
+
+    // Salva as alterações no banco de dados
+    var updateResult = await _userManager.UpdateAsync(user);
+    if (updateResult.Succeeded)
+    {
+        return RedirectToAction(nameof(Index)); // Redireciona para a lista ou qualquer outra página desejada
+    }
+
+    // Caso as atualizações falhem, retorna com mensagens de erro
+    foreach (var error in updateResult.Errors)
+    {
+        ModelState.AddModelError(string.Empty, error.Description);
+    }
+
+    return View(userModel); // Retorna para a view com os erros
+}
+
 
         // GET: UsersController/Delete/5
         public ActionResult Delete(int id)

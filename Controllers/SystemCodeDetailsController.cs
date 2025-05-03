@@ -28,7 +28,7 @@ namespace HelpdeskSystem.Controllers
             var systemCodeDetail = await _context
                 .systemCodeDetails
                 .Include(s => s.SystemCode)
-                .Include(x => x.CriadoPor)
+                .Include(x => x.CreatedBy)
                 .ToListAsync();
 
             return View(systemCodeDetail);
@@ -56,7 +56,7 @@ namespace HelpdeskSystem.Controllers
         // GET: SystemCodeDetails/Create
         public IActionResult Create()
         {
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Descricao");
+            ViewBag.SystemCodeId = new SelectList(_context.systemCodes, "Id", "Description");
             return View();
         }
 
@@ -69,8 +69,8 @@ namespace HelpdeskSystem.Controllers
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            systemCodeDetail.CriadoEm = DateTime.Now;
-            systemCodeDetail.CriadoPorId = userId;
+            systemCodeDetail.CreatedOn = DateTime.Now;
+            systemCodeDetail.CreatedById = userId;
             _context.Add(systemCodeDetail);
             await _context.SaveChangesAsync();
             var activity = new AuditTrail
@@ -100,7 +100,7 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Descricao", systemCodeDetail.SystemCodeId);
+            ViewData["SystemCodeId"] = new SelectList(_context.systemCodes, "Id", "Description", systemCodeDetail.SystemCodeId);
             return View(systemCodeDetail);
         }
 
@@ -111,40 +111,28 @@ namespace HelpdeskSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, SystemCodeDetail systemCodeDetail)
         {
+            // Verifique os valores de id e systemCodeDetail.Id para garantir que eles são iguais
+            Console.WriteLine($"id: {id}, systemCodeDetail.Id: {systemCodeDetail.Id}");
 
             if (id != systemCodeDetail.Id)
             {
                 return NotFound();
             }
+            var existingDetail = await _context.systemCodeDetails.FindAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            existingDetail.Code = systemCodeDetail.Code; // Exemplo, substitua pelos campos reais
+            existingDetail.Description = systemCodeDetail.Description; // idem
+            existingDetail.ModifiedOn = DateTime.Now;
+            existingDetail.ModifiedById = userId;
+            existingDetail.OrderNo = systemCodeDetail.OrderNo;
+            existingDetail.SystemCodeId = systemCodeDetail.SystemCodeId;
+                _context.Entry(existingDetail).Property(x => x.CreatedById).IsModified = false;
+                _context.Entry(existingDetail).Property(x => x.CreatedOn).IsModified = false;
 
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    systemCodeDetail.ModificadoEm = DateTime.Now;
-                    systemCodeDetail.ModificadoPorId = userId;
-                    _context.Update(systemCodeDetail);
+            _context.Update(existingDetail);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SystemCodeDetailExists(systemCodeDetail.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-            }
-            return View(systemCodeDetail);
         }
-
         // GET: SystemCodeDetails/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

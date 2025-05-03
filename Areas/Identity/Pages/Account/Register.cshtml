@@ -1,7 +1,7 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Registrar";
     Layout = null;
 }
 
@@ -35,24 +35,27 @@
 
                         <!--Campo Nome-->
                         <div class="input-group mb-3">
-                            <input asp-for="Input.PrimeiroNome" class="form-control" placeholder="Nome"/>
-                            <span asp-validation-for="Input.PrimeiroNome" class="text-danger"></span>
+                            <input asp-for="Input.FirstName" class="form-control" placeholder="Nome"/>
+                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
                                 </div>
                             </div>
                         </div>
+
                         <!--Campo Sobrenome-->
                         <div class="input-group mb-3">
-                            <input asp-for="Input.Sobrenome" class="form-control" placeholder="Sobrenome" />
-                            <span asp-validation-for="Input.Sobrenome" class="text-danger"></span>
+                            <input asp-for="Input.LastName" class="form-control" placeholder="Sobrenome" />
+                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-user"></span>
                                 </div>
                             </div>
                         </div>
+
+                         <!--Campo Email-->
                         <div class="input-group mb-3">
                             <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email" />
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
@@ -62,33 +65,50 @@
                                 </div>
                             </div>
                         </div>
+                        <!--Campo Telefone-->
                         <div class="input-group mb-3">
-                            <input asp-for="Input.Genero" class="form-control" placeholder="Genero" />
-                            <span asp-validation-for="Input.Genero" class="text-danger"></span>
+                            <input asp-for="Input.Telephone" class="form-control" placeholder="Telefone" />
+                            <span asp-validation-for="Input.Telephone" class="text-danger"></span>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Campo Genero-->
+                        <div class="input-group mb-3">
+                            <input asp-for="Input.Gender" class="form-control" placeholder="Genero" />
+                            <span asp-validation-for="Input.Gender" class="text-danger"></span>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-transgender"></span>
                                 </div>
                             </div>
                         </div>
+
+                         <!--Campo País-->
                         <div class="input-group mb-3">
-                            <input asp-for="Input.País" class="form-control" placeholder="País" />
-                            <span asp-validation-for="Input.País" class="text-danger"></span>
+                            <input asp-for="Input.Country" class="form-control" placeholder="País" />
+                            <span asp-validation-for="Input.Country" class="text-danger"></span>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-globe"></span>
                                 </div>
                             </div>
                         </div>
+
+                        <!--Campo Cidade-->
                         <div class="input-group mb-3">
-                            <input asp-for="Input.Cidade" class="form-control" placeholder="Cidade"/>
-                            <span asp-validation-for="Input.Cidade" class="text-danger"></span>
+                            <input asp-for="Input.City" class="form-control" placeholder="Cidade"/>
+                            <span asp-validation-for="Input.City" class="text-danger"></span>
                             <div class="input-group-append">
                                 <div class="input-group-text">
                                     <span class="fas fa-globe"></span>
                                 </div>
                             </div>
                         </div>
+
+                        <!--Campo Senha-->
                         <div class="input-group mb-3">
                             <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Senha" />
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
@@ -98,6 +118,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!--Campo Confirmar Senha-->
                         <div class="input-group mb-3">
                             <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirmar Senha" />
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>

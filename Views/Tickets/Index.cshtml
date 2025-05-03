@@ -25,67 +25,72 @@
                         @Html.DisplayNameFor(model => model.Id)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Titulo)
+                        @Html.DisplayNameFor(model => model.Title)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.SubCategoriaId)
+                        @Html.DisplayNameFor(model => model.SubCategoryId)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.StatusId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.PrioridadeId)
+                        @Html.DisplayNameFor(model => model.PriorityId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CriadoPor)
+                        @Html.DisplayNameFor(model => model.CreatedBy)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CriadoEm)
+                        @Html.DisplayNameFor(model => model.CreatedOn)
                     </th>
                     <th>Nº de Observações</th>
                     <th>Ações</th>
                 </tr>
             </thead>
 
-
-
             <tbody>
 
                 @foreach (var item in Model.Tickets) {
                     var colorcode = "Gray";
-                    if (item.Status.Codigo == "Concluido")
+                    var colorprio = "Black";
+                    if (item.Status.Code == "CON")
                     {
                         colorcode = "Green";
                     }
-                    else if (item.Status.Codigo == "EmAndamento")
+                    else if (item.Status.Code == "AND")
                     {
                         colorcode = "Yellow";
                     }
-                    else if (item.Status.Codigo == "Pendente")
+                    else if (item.Status.Code == "PND")
                     {
                         colorcode = "Red";
                     }
+                    if (item.Priority.Code == "URG")
+                    {
+                        colorprio = "Red";
+                    }
+                   
                     <tr>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
+                @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SubCategory.Name)
             </td>
             <td style="color:@colorcode">
-                @Html.DisplayFor(modelItem => item.Status.Descricao)
+                @Html.DisplayFor(modelItem => item.Status.Description)
+            </td>
+            <td style="color:@colorprio">
+                @Html.DisplayFor(modelItem => item.Priority.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Prioridade.Descricao)
+                @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CriadoPor.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CriadoEm)
+                @Html.DisplayFor(modelItem => item.CreatedOn)
             </td>
             <td style="text-align: center">
                 @Html.DisplayFor(modelItem => item.TicketComments.Count)
@@ -103,6 +108,10 @@
                                         <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">Detalhes</a></li>
                                         <li><hr class="dropdown-divider" /></li>
                                         <li><a class="dropdown-item" asp-action="Delete" asp-route-id="@item.Id">Apagar</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-action="TicketAssignment" asp-route-id="@item.Id">Atribuir</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-action="Resolve" asp-route-id="@item.Id">Resolver</a></li>
                                     </ul>
                                 </div>
                             </div>

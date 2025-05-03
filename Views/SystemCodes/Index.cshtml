@@ -7,7 +7,7 @@
 <h1>Códigos de Sistema</h1>
 
 <p>
-    <a asp-action="Create">Criar novo Código</a>
+    <a class="btn btn-dark" asp-action="Create">Novo Código</a>
 </p>
 <div class="card">
     <div class="card-header">
@@ -19,47 +19,57 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Codigo)
+                @Html.DisplayNameFor(model => model.Code)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Descricao)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CriadoPor)
+                @Html.DisplayNameFor(model => model.CreatedBy)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CriadoEm)
+                @Html.DisplayNameFor(model => model.CreatedOn)
             </th>
-            <th>Editar</th>
-            <th>Detalhes</th>
-            <th>Deletar</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Codigo)
+                @Html.DisplayFor(modelItem => item.Code)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <th>
-                @Html.DisplayFor(model => item.CriadoPor.FullName)
-            </th>
-            <th>
-                @Html.DisplayFor(model => item.CriadoEm)
-            </th>
-            <td>
-                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                @Html.DisplayFor(model => item.CreatedBy.FullName)
             </td>
-             <td>
-                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+            <td>
+                @Html.DisplayFor(model => item.CreatedOn)
             </td>
-        </tr>
-}
-    </tbody>
-</table>
+                        <td>
+                            <div class="ms-auto">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary">Ações</button>
+                                    <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span class="visually-hidden">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">Editar</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">Detalhes</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-action="Delete" asp-route-id="@item.Id">Apagar</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                       
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

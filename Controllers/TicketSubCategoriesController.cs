@@ -25,13 +25,13 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Index(int id, TicketSubCategoriesVM vm)
         {
             vm.TicketSubCategories = await _context.TicketSubCategories
-                .Include(t => t.Categoria)
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor)
-                .Where(x=>x.CategoriaId == id)
+                .Include(t => t.Category)
+                .Include(t => t.CreatedBy)
+                .Include(t => t.ModifiedBy)
+                .Where(x=>x.CategoryId == id)
                 .ToListAsync();
 
-            vm.CategoriaId = id;
+            vm.CategoryId = id;
             return View(vm);
         }
 
@@ -44,8 +44,8 @@ namespace HelpdeskSystem.Controllers
             }
 
             var ticketSubCategory = await _context.TicketSubCategories
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor)
+                .Include(t => t.CreatedBy)
+                .Include(t => t.ModifiedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticketSubCategory == null)
             {
@@ -59,7 +59,7 @@ namespace HelpdeskSystem.Controllers
         public IActionResult Create(int Id)
         {
             TicketSubCategory category = new();
-            category.CategoriaId = Id;
+            category.CategoryId = Id;
             return View(category);
         }
 
@@ -71,11 +71,11 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Create(int id,TicketSubCategory ticketSubCategory)
         {
             var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ticketSubCategory.CriadoPorId = usuariologado;
-            ticketSubCategory.CriadoEm = DateTime.Now;
+            ticketSubCategory.CreatedById = usuariologado;
+            ticketSubCategory.CreatedOn = DateTime.Now;
 
             ticketSubCategory.Id = 0;
-            ticketSubCategory.CategoriaId = id;
+            ticketSubCategory.CategoryId = id;
             _context.Add(ticketSubCategory);
 
             //Registrar no Log de Auditoria
@@ -108,8 +108,8 @@ namespace HelpdeskSystem.Controllers
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.CriadoPorId);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.ModificadoPorId);
+            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.CreatedById);
+            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.ModifiedById);
             return View(ticketSubCategory);
         }
 
@@ -130,8 +130,8 @@ namespace HelpdeskSystem.Controllers
                 try
                 {
                     var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    ticketSubCategory.ModificadoPorId = usuariologado;
-                    ticketSubCategory.ModificadoEm = DateTime.Now;
+                    ticketSubCategory.ModifiedById = usuariologado;
+                    ticketSubCategory.ModifiedOn = DateTime.Now;
                     _context.Update(ticketSubCategory);
                     await _context.SaveChangesAsync();
 
@@ -161,8 +161,8 @@ namespace HelpdeskSystem.Controllers
             }
 
             var ticketSubCategory = await _context.TicketSubCategories
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor)
+                .Include(t => t.CreatedOn)
+                .Include(t => t.ModifiedOn)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ticketSubCategory == null)
             {

@@ -79,30 +79,30 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
             /// Nome do Usuario:
             [Required]
             [Display(Name = "Nome")]
-            public string PrimeiroNome { get; set; }
+            public string FirstName { get; set; }
 
             /// Sobrenome do Usuário
             [Required]
             [Display(Name = "Sobrenome")]
-            public string Sobrenome { get; set; }
+            public string LastName { get; set; }
 
 
             ///Genero
             [Required]
             [Display(Name = "Genero")]
-            public string Genero { get; set; }
+            public string Gender { get; set; }
 
 
             ///Pais
             [Required]
             [Display(Name = "País")]
-            public string País { get; set; }
+            public string Country { get; set; }
 
 
             ///Cidade
             [Required]
             [Display(Name = "Cidade")]
-            public string Cidade { get; set; }
+            public string City { get; set; }
 
 
             ///Email
@@ -110,6 +110,12 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+
+            ///Email
+            [Required]
+            
+            [Display(Name = "Telefone")]
+            public string Telephone { get; set; }
 
             ///Requerimentos de Senha - Senha
             [Required]
@@ -139,11 +145,11 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                user.PrimeiroNome = Input.PrimeiroNome;
-                user.Sobrenome = Input.Sobrenome;
-                user.Genero = Input.Genero;
-                user.Pais = Input.País;
-                user.Cidade = Input.Cidade;
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.Gender = Input.Gender;
+                user.Country = Input.Country;
+                user.City = Input.City;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);

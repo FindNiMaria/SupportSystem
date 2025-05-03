@@ -22,7 +22,7 @@ namespace HelpdeskSystem.Controllers
             {
                 var subcategories = await _context
                     .TicketSubCategories
-                    .Where(x => x.CategoriaId == Id)
+                    .Where(x => x.CategoryId == Id)
                     .OrderBy(c => c.Name)
                     .Select(i => new { id = i.Id, name = i.Name })
                     .Distinct()
@@ -43,12 +43,12 @@ namespace HelpdeskSystem.Controllers
             try
             {
                 var categoria = await _context.TicketCategories
-                    .Include(c => c.PrioridadePadrao)
+                    .Include(c => c.DefautPriority)
                     .FirstOrDefaultAsync(c => c.Id == categoriaId);
 
-                if (categoria?.PrioridadePadrao != null)
+                if (categoria?.DefautPriority != null)
                 {
-                    return Json(new { id = categoria.PrioridadePadrao.Id, descricao = categoria.PrioridadePadrao.Descricao });
+                    return Json(new { id = categoria.DefautPriority.Id, descricao = categoria.DefautPriority.Description });
                 }
 
                 return Json(new { });

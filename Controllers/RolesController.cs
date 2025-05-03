@@ -34,7 +34,7 @@ namespace HelpdeskSystem.Controllers
         public async Task<ActionResult> Create(RolesViewModel vm)
         {
             IdentityRole role = new();
-            role.Name = vm.NomePermissao;
+            role.Name = vm.Permission;
 
             var result = await _rolemanager.CreateAsync(role);
             if (result.Succeeded)

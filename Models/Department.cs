@@ -8,9 +8,9 @@ namespace HelpdeskSystem.Models
         public int Id { get; set; }
 
         [DisplayName("Codigo do Departamento")]
-        public string Codigo { get; set; }
+        public string Code { get; set; }
 
-        [DisplayName("Código do Departamento")]
-        public string Nome { get; set; }
+        [DisplayName("Departamento")]
+        public string Name { get; set; }
     }
 }

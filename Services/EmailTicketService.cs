@@ -37,7 +37,7 @@ namespace HelpdeskSystem.Services
             using var smtp = new SmtpClient();
             await smtp.ConnectAsync(
                 _configuration["EmailSettings:SmtpServer"],
-                int.Parse(_configuration["EmailSettings:Port"]),
+                int.Parse(_configuration["EmailSettings:SmtpPort"]),
                 MailKit.Security.SecureSocketOptions.StartTls
             );
             await smtp.AuthenticateAsync(
@@ -73,23 +73,23 @@ namespace HelpdeskSystem.Services
 
                 var statusPendente = await _context.systemCodeDetails
                     .Include(x => x.SystemCode)
-                    .FirstOrDefaultAsync(x => x.SystemCode.Codigo == "Status" && x.Codigo == "Pendente");
+                    .FirstOrDefaultAsync(x => x.SystemCode.Code == "STS" && x.Code == "PND");
 
                 var prioridadeDefault = await _context.systemCodeDetails
                     .Include(x => x.SystemCode)
-                    .Where(x => x.SystemCode.Codigo == "Prioridade")
+                    .Where(x => x.SystemCode.Code == "PRD")
                     .OrderBy(x => x.Id)
                     .FirstOrDefaultAsync();
 
                 var novoTicket = new Ticket
                 {
-                    Titulo = message.Subject ?? "Sem Assunto",
-                    Descricao = message.TextBody ?? message.HtmlBody ?? "Sem conteúdo",
-                    CriadoPorId = usuario.Id,
-                    CriadoEm = DateTime.Now,
+                    Title = message.Subject ?? "Sem Assunto",
+                    Description = message.TextBody ?? message.HtmlBody ?? "Sem conteúdo",
+                    CreatedById = usuario.Id,
+                    CreatedOn = DateTime.Now,
                     StatusId = statusPendente?.Id ?? 0,
-                    PrioridadeId = prioridadeDefault?.Id ?? 0,
-                    CategoriaId = _context.TicketCategories.Select(c => c.Id).FirstOrDefault(), // usa a primeira categoria como padrão
+                    PriorityId = prioridadeDefault?.Id ?? 0,
+                    CategoryId = _context.TicketCategories.Select(c => c.Id).FirstOrDefault(), // usa a primeira categoria como padrão
                 };
 
                 _context.Tickets.Add(novoTicket);

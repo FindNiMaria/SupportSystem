@@ -23,8 +23,8 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.TicketCategories
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor);
+                .Include(t => t.CreatedBy)
+                .Include(t => t.ModifiedBy);
 
             return View(await applicationDbContext.ToListAsync());
         }
@@ -35,8 +35,8 @@ namespace HelpdeskSystem.Controllers
             if (id == null) return NotFound();
 
             var ticketCategory = await _context.TicketCategories
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor)
+                .Include(t => t.CreatedBy)
+                .Include(t => t.ModifiedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ticketCategory == null) return NotFound();
@@ -50,9 +50,7 @@ namespace HelpdeskSystem.Controllers
             ViewBag.Prioridades = new SelectList(
                 _context.systemCodeDetails
                     .Include(x => x.SystemCode)
-                    .Where(x => x.SystemCode.Codigo == "Prioridade"),
-                "Id",
-                "Descricao"
+                    .Where(x => x.SystemCode.Code == "PRD"),"Id","Description"
             );
 
             return View();
@@ -64,8 +62,8 @@ namespace HelpdeskSystem.Controllers
         public async Task<IActionResult> Create(TicketCategory ticketCategory)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ticketCategory.CriadoEm = DateTime.Now;
-            ticketCategory.CriadoPorId = userId;
+            ticketCategory.CreatedOn = DateTime.Now;
+            ticketCategory.CreatedById = userId;
 
             _context.Add(ticketCategory);
             await _context.SaveChangesAsync();
@@ -94,13 +92,13 @@ namespace HelpdeskSystem.Controllers
             var ticketCategory = await _context.TicketCategories.FindAsync(id);
             if (ticketCategory == null) return NotFound();
 
-            ViewBag.Prioridades = new SelectList(
+            ViewBag.Priority = new SelectList(
                 _context.systemCodeDetails
                     .Include(x => x.SystemCode)
-                    .Where(x => x.SystemCode.Codigo == "Prioridade"),
+                    .Where(x => x.SystemCode.Code == "PRD"),
                 "Id",
-                "Descricao",
-                ticketCategory.PrioridadePadraoId
+                "Description",
+                ticketCategory.DefaultPriorityId
             );
 
             return View(ticketCategory);
@@ -113,11 +111,16 @@ namespace HelpdeskSystem.Controllers
         {
             if (id != ticketCategory.Id) return NotFound();
 
+            var category = await _context.TicketCategories.FindAsync(id);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ticketCategory.ModificadoEm = DateTime.Now;
-            ticketCategory.ModificadoPorId = userId;
+            category.ModifiedOn = DateTime.Now;
+            category.ModifiedById = userId;
+            category.Code = ticketCategory.Code;
+            category.Name = ticketCategory.Name;
+            _context.Entry(category).Property(x => x.CreatedById).IsModified = false;
+            _context.Entry(category).Property(x => x.CreatedOn).IsModified = false;
 
-            _context.Update(ticketCategory);
+            _context.Update(category);
             await _context.SaveChangesAsync();
 
             var activity = new AuditTrail
@@ -142,8 +145,8 @@ namespace HelpdeskSystem.Controllers
             if (id == null) return NotFound();
 
             var ticketCategory = await _context.TicketCategories
-                .Include(t => t.CriadoPor)
-                .Include(t => t.ModificadoPor)
+                .Include(t => t.CreatedBy)
+                .Include(t => t.ModifiedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ticketCategory == null) return NotFound();

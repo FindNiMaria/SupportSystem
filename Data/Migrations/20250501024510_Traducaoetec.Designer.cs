@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250501024510_Traducaoetec")]
+    partial class Traducaoetec
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,6 @@ namespace HelpdeskSystem.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -80,7 +82,6 @@ namespace HelpdeskSystem.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -144,7 +145,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuditTrails", (string)null);
+                    b.ToTable("AuditTrails");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.Comment", b =>
@@ -183,7 +184,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.Department", b =>
@@ -221,7 +222,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.SystemCode", b =>
@@ -259,7 +260,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("systemCodes", (string)null);
+                    b.ToTable("systemCodes");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.SystemCodeDetail", b =>
@@ -305,7 +306,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("SystemCodeId");
 
-                    b.ToTable("systemCodeDetails", (string)null);
+                    b.ToTable("systemCodeDetails");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.Ticket", b =>
@@ -377,7 +378,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketCategory", b =>
@@ -420,7 +421,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("TicketCategories", (string)null);
+                    b.ToTable("TicketCategories");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketResolution", b =>
@@ -464,7 +465,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("TicketResolutions", (string)null);
+                    b.ToTable("TicketResolutions");
                 });
 
             modelBuilder.Entity("HelpdeskSystem.Models.TicketSubCategory", b =>
@@ -507,7 +508,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("ModifiedById");
 
-                    b.ToTable("TicketSubCategories", (string)null);
+                    b.ToTable("TicketSubCategories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
