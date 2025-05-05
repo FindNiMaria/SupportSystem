@@ -20,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SystemCodeDetail> systemCodeDetails { get; set; }
     public DbSet<Department> Departments { get; set; }
     public DbSet<TicketResolution> TicketResolutions { get; set; }
+    public DbSet<SystemTask> SystemTasks { get; set; }
+    public DbSet<SystemSettings> SystemSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -91,6 +93,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(tr => tr.Status)
             .WithMany()
             .HasForeignKey(tr => tr.StatusId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<SystemTask>()
+            .HasOne(tr => tr.Parent)
+            .WithMany()
+            .HasForeignKey(tr => tr.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 

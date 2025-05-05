@@ -32,9 +32,31 @@ namespace HelpdeskSystem.Models
         [DisplayName("Anexo: ")]
         public string? Attachment { get; set; }
 
+        [DisplayName("Atribuído a")]
         public int? AssignedToId { get; set; }
         public ApplicationUser AssignedTo { get; set; }
+
+        [DisplayName("Atribuído em")]
         public DateTime? AssignedOn { get; set; }
+
         public ICollection<Comment> TicketComments { get; set; }
+
+        [DisplayName("Duração do Ticket")]
+        public int? TicketDuration
+        {
+            get
+            {
+                if(CreatedOn == null)
+                {
+                    return null;
+                }
+                DateTime now = DateTime.UtcNow;
+
+                TimeSpan difference = now.Subtract(CreatedOn);
+
+                return difference.Days;
+            }
+                
+        }
     }
 }

@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505171810_AddUserActivitySystemtasks")]
+    partial class AddUserActivitySystemtasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -308,48 +311,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.ToTable("systemCodeDetails");
                 });
 
-            modelBuilder.Entity("HelpdeskSystem.Models.SystemSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("ModifiedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("SystemSettings");
-                });
-
             modelBuilder.Entity("HelpdeskSystem.Models.SystemTask", b =>
                 {
                     b.Property<int>("Id")
@@ -382,7 +343,7 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<int?>("OrderNo")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ParentId")
+                    b.Property<int>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("SystemTaskId")
@@ -831,23 +792,6 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Navigation("SystemCode");
                 });
 
-            modelBuilder.Entity("HelpdeskSystem.Models.SystemSettings", b =>
-                {
-                    b.HasOne("HelpdeskSystem.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HelpdeskSystem.Models.ApplicationUser", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("ModifiedBy");
-                });
-
             modelBuilder.Entity("HelpdeskSystem.Models.SystemTask", b =>
                 {
                     b.HasOne("HelpdeskSystem.Models.ApplicationUser", "CreatedBy")
@@ -863,7 +807,8 @@ namespace HelpdeskSystem.Data.Migrations
                     b.HasOne("HelpdeskSystem.Models.SystemTask", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("HelpdeskSystem.Models.SystemTask", null)
                         .WithMany("ChildTask")

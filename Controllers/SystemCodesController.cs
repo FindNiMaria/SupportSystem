@@ -116,8 +116,8 @@ namespace HelpdeskSystem.Controllers
             }
             var existing = await _context.systemCodeDetails.FindAsync(id);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            existing.Code = systemCode.Code; // Exemplo, substitua pelos campos reais
-            existing.Description = systemCode.Description; // idem
+            existing.Code = systemCode.Code; 
+            existing.Description = systemCode.Description; 
             existing.ModifiedOn = DateTime.Now;
             existing.ModifiedById = userId;
             _context.Entry(existing).Property(x => x.CreatedById).IsModified = false;

@@ -42,6 +42,9 @@
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedOn)
                     </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TicketDuration)
+                    </th>
                     <th>Nº de Observações</th>
                     <th>Ações</th>
                 </tr>
@@ -91,6 +94,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedOn)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TicketDuration)
             </td>
             <td style="text-align: center">
                 @Html.DisplayFor(modelItem => item.TicketComments.Count)
