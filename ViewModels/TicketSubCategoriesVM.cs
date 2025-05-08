@@ -1,4 +1,5 @@
-﻿using HelpdeskSystem.Models;
+﻿using HelpdeskSystem.Models.Ticket;
+using HelpdeskSystem.Models.User;
 
 namespace HelpdeskSystem.ViewModels
 {

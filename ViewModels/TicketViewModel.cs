@@ -1,5 +1,7 @@
-﻿using HelpdeskSystem.Models;
+﻿using HelpdeskSystem.Models.Ticket;
 using System.ComponentModel;
+using HelpdeskSystem.Models.System;
+using HelpdeskSystem.Models.User;
 
 namespace HelpdeskSystem.ViewModels
 {
@@ -48,6 +50,8 @@ namespace HelpdeskSystem.ViewModels
         public int? AssignedToId { get; set; }
         public ApplicationUser AssignedTo { get; set; }
         public DateTime? AssignedOn { get; set; }
+
+        [DisplayName("Duração")]
         public int? TicketDuration
         {
             get

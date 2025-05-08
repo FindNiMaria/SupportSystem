@@ -7,6 +7,7 @@ using HelpdeskSystem.Data;
 using HelpdeskSystem.Models;
 using MailKit;
 using MailKit.Net.Smtp;
+using HelpdeskSystem.Models.Ticket;
 using System.Security.Claims;
 
 namespace HelpdeskSystem.Services

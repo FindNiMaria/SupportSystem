@@ -1,5 +1,6 @@
-﻿    @using Microsoft.AspNetCore.Identity
-    @model IEnumerable<HelpdeskSystem.Models.Ticket>
+﻿    @using HelpdeskSystem.Models.User
+@using Microsoft.AspNetCore.Identity
+    @model IEnumerable<HelpdeskSystem.Models.Ticket.Ticket>
     @inject SignInManager<ApplicationUser> SignInManager
     @inject UserManager<ApplicationUser> UserManager
 @{

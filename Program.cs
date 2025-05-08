@@ -5,6 +5,11 @@ using HelpdeskSystem.Models;
 using Microsoft.Extensions.DependencyInjection;
 using HelpdeskSystem.Services;
 using Microsoft.Extensions.Options;
+using HelpdeskSystem.Models.User;
+using Hangfire;
+using Hangfire.SqlServer;
+using HelpdeskSystem.Jobs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +18,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddHangfire(config =>
+    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -28,10 +38,17 @@ builder.Services.AddSingleton(resolver =>
 // Registrar o serviço que envia/recebe emails
 builder.Services.AddScoped<IEmailTicketService, EmailTicketService>();
 
-
+builder.Services.AddScoped<TicketPriorityJob>();
 
 var app = builder.Build();
 
+app.UseHangfireDashboard();
+
+RecurringJob.AddOrUpdate<TicketPriorityJob>(
+    "escalar-prioridades",
+    job => job.EscalarPrioridades(),
+    Cron.Minutely // ou Cron.Minutely pra testar
+);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -50,7 +67,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.MapHangfireDashboard();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
