@@ -3,7 +3,7 @@ using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
 using System.ComponentModel;
 
-namespace HelpdeskSystem.Models.OS
+namespace HelpdeskSystem.Models.SO
 {
     public class OS : UserActivity
     {

@@ -1,4 +1,4 @@
-﻿@model HelpdeskSystem.Models.Ticket.Comment
+﻿@model HelpdeskSystem.Models.SO.OSComment
 
 @{
     ViewData["Title"] = "Create";
@@ -22,8 +22,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="TicketId" class="control-label"></label>
-                        <select asp-for="TicketId" class ="form-control" asp-items="ViewBag.IdChamado"></select>
+                        <label asp-for="OSId" class="control-label"></label>
+                        <select asp-for="OSId" class="form-control" asp-items="ViewBag.IdChamado"></select>
                     </div>
                 </div>
             </div>
@@ -40,5 +40,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

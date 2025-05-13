@@ -1,4 +1,4 @@
-﻿using HelpdeskSystem.Models.OS;
+﻿using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
@@ -199,5 +199,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Models.Ticket.Comment> Comment_1 { get; set; } = default!;
+    public DbSet<Models.SO.OSComment> OSComment_1 { get; set; } = default!;
 
 }

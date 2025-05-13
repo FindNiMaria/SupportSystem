@@ -15,12 +15,12 @@ using MailKit.Net.Imap;
 using MailKit.Search;
 using MailKit;
 using HelpdeskSystem.Services;
-using HelpdeskSystem.Models.OS;
+using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.User;
 using HelpdeskSystem.Data.Migrations;
 
 
-namespace HelpdeskSystem.Controllers.Os
+namespace HelpdeskSystem.Controllers.SO
 {
     public class OSController : Controller
     {

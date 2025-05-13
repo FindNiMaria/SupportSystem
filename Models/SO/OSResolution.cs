@@ -2,7 +2,7 @@
 using HelpdeskSystem.Models.User;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 
-namespace HelpdeskSystem.Models.OS
+namespace HelpdeskSystem.Models.SO
 {
     public class OSResolution : UserActivity
     {

@@ -1,4 +1,4 @@
-﻿using HelpdeskSystem.Models.OS;
+﻿using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;

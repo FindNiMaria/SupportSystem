@@ -1,7 +1,7 @@
 ﻿using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.User;
 
-namespace HelpdeskSystem.Models.OS
+namespace HelpdeskSystem.Models.SO
 {
     public class OSCategory : UserActivity
     {

@@ -1,13 +1,13 @@
-﻿@model IEnumerable<HelpdeskSystem.Models.Ticket.Comment>
+﻿@model IEnumerable<HelpdeskSystem.Models.SO.OSComment>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Observações</h1>
+<h1>Comentários</h1>
 
 <p>
-    <a class="btn btn-dark" asp-action="Create">Criar Nova</a>
+    <a class="btn btn-dark" asp-action="Create">Criar Novo</a>
 </p>
 <table class="table table-bordered table-striped table-hover table-responsive-lg">
     <thead>
@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Ticket)
+                @Html.DisplayNameFor(model => model.OS)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedOn)
@@ -37,7 +37,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Ticket.Title)
+                    @Html.DisplayFor(modelItem => item.OS.Title)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedOn)
