@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.User
 {
+    [Authorize(Roles = "Administrador")]
     public class AuditTrailsController : Controller
     {
+        
         private readonly ApplicationDbContext _context;
 
         public AuditTrailsController(ApplicationDbContext context)
@@ -20,11 +24,37 @@ namespace HelpdeskSystem.Controllers.User
         }
 
         // GET: AuditTrails
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(AuditTrailViewModel vm)
         {
-            var applicationDbContext = _context.AuditTrails.Include(a => a.User);
-            return View(await applicationDbContext.ToListAsync());
+            
+            var query = _context.AuditTrails
+                .Include(a => a.User)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(vm.Module))
+                query = query.Where(a => a.Module.Contains(vm.Module));
+
+            if (!string.IsNullOrWhiteSpace(vm.Action))
+                query = query.Where(a => a.Action.Contains(vm.Action));
+
+            if (!string.IsNullOrWhiteSpace(vm.UserId))
+                query = query.Where(a => a.UserId == vm.UserId);
+
+            if (!string.IsNullOrWhiteSpace(vm.AffectedTable))
+                query = query.Where(a => a.AffectedTable == vm.AffectedTable);
+
+            if (vm.From.HasValue)
+                query = query.Where(a => a.TimeStamp >= vm.From.Value);
+
+            if (vm.To.HasValue)
+                query = query.Where(a => a.TimeStamp <= vm.To.Value);
+
+            vm.Logs = await query.OrderByDescending(a => a.TimeStamp).ToListAsync();
+            vm.Users = new SelectList(_context.Users, "Id", "FullName");
+
+            return View(vm);
         }
+
 
         // GET: AuditTrails/Details/5
         public async Task<IActionResult> Details(int? id)

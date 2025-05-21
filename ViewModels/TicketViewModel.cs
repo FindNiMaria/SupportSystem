@@ -2,10 +2,11 @@
 using System.ComponentModel;
 using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.User;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HelpdeskSystem.ViewModels
 {
-    public class TicketViewModel
+    public class TicketViewModel : UserActivity
     {
         [DisplayName("Nº")]
         public int Id { get; set; }
@@ -40,16 +41,17 @@ namespace HelpdeskSystem.ViewModels
 
         [DisplayName("Anexo: ")]
         public String Attachment { get; set; }
-        public List<Ticket> Tickets { get; set; }
+        public List<TicketViewModel> Tickets { get; set; }
         public Ticket TicketDetails { get; set; }
-        public List<Comment> TicketComments { get; set; }
         public Comment TicketComment { get; set; }
         public string TicketDescription { get; set; }
-        public List<TicketResolution> TicketResolutions { get; set; }
+        public List<Comment> TicketComments { get; set; } = new();
+        public List<TicketResolution> TicketResolutions { get; set; } = new();
         public TicketResolution Resolution { get; set; }
-        public int? AssignedToId { get; set; }
+        public string? AssignedToId { get; set; }
         public ApplicationUser AssignedTo { get; set; }
         public DateTime? AssignedOn { get; set; }
+
 
         [DisplayName("Duração")]
         public int? TicketDuration
@@ -66,7 +68,13 @@ namespace HelpdeskSystem.ViewModels
 
                 return difference.Days;
             }
-
         }
+        public string? TechnicianId { get; set; }
+
+        public IEnumerable<SelectListItem> Categories { get; set; }
+        public IEnumerable<SelectListItem> Priorities { get; set; }
+        public IEnumerable<SelectListItem> Statuses { get; set; }
+        public IEnumerable<SelectListItem> Technicians { get; set; }
     }
 }
+

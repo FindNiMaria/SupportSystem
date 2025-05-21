@@ -2,6 +2,7 @@
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HelpdeskSystem.Models.SO
 {
@@ -26,17 +27,23 @@ namespace HelpdeskSystem.Models.SO
 
         [DisplayName("Categoria: ")]
         public int CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
         public TicketCategory Category { get; set; }
 
         [DisplayName("Sub-Categoria: ")]
         public int? SubCategoryId { get; set; }
+
+        [ForeignKey("SubCategoryId")]
         public TicketSubCategory SubCategory { get; set; }
 
         [DisplayName("Anexo: ")]
         public string? Attachment { get; set; }
 
         [DisplayName("Atribuído a")]
-        public int? AssignedToId { get; set; }
+        public string? AssignedToId { get; set; }
+
+        [ForeignKey("AssignedToId")]
         public ApplicationUser AssignedTo { get; set; }
 
         [DisplayName("Atribuído em")]

@@ -1,92 +1,92 @@
-﻿@using HelpdeskSystem.Models.User
-@model ApplicationUser
+﻿@model HelpdeskSystem.Models.User.ApplicationUser
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Usuário";
 }
 
-<h1>Editar</h1>
-
-<h4>Usuário</h4>
+<h1>Editar Usuário</h1>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Edit" method="post">
             <input type="hidden" asp-for="Id" />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="FirstName" class="control-label"></label>
-                                    <input asp-for="FirstName" class="form-control" />
-                                    <span asp-validation-for="FirstName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="LastName" class="control-label"></label>
-                                    <input asp-for="LastName" class="form-control" />
-                                    <span asp-validation-for="LastName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="UserName" class="control-label"></label>
-                                    <input asp-for="UserName" class="form-control" />
-                                    <span asp-validation-for="UserName" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Email" class="control-label"></label>
-                                    <input asp-for="Email" class="form-control" />
-                                    <span asp-validation-for="Email" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="PhoneNumber" class="control-label"></label>
-                                    <input asp-for="PhoneNumber" class="form-control" />
-                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Country" class="control-label"></label>
-                                    <input asp-for="Country" class="form-control" />
-                                    <span asp-validation-for="Country" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="City" class="control-label"></label>
-                                    <input asp-for="City" class="form-control" />
-                                    <span asp-validation-for="City" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="Gender" class="control-label"></label>
-                                    <input asp-for="Gender" class="form-control" />
-                                    <span asp-validation-for="Gender" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label asp-for="PasswordHash" class="control-label"></label>
-                                    <input type="password" asp-for="PasswordHash" class="form-control" />
-                                    <span asp-validation-for="PasswordHash" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
+
             <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <input asp-for="Country" class="form-control" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <input asp-for="Gender" class="form-control" />
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="DepartmentId" class="control-label">Departamento</label>
+                <select asp-for="DepartmentId" class="form-control" asp-items="ViewBag.Departments">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Role" class="control-label">Papel (Role)</label>
+                <select name="Role" class="form-control" asp-items="ViewBag.Roles">
+                    <option value="">Selecione</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="NewPassword" class="control-label">Nova Senha</label>
+                <input type="password" name="NewPassword" class="form-control" />
+            </div>
+
+            <div class="form-group mt-3">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+
 <div>
-    <a asp-action="Index">Voltar a Lista</a>
+    <a asp-action="Index">Voltar</a>
 </div>
 
 @section Scripts {

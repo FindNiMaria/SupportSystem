@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using System.Security.Claims;
 using HelpdeskSystem.Models.System;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.System
 {
+    [Authorize(Roles = "Administrador")]
     public class SystemTasksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,11 +24,33 @@ namespace HelpdeskSystem.Controllers.System
         }
 
         // GET: SystemTasks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SystemTaskViewModel vm)
         {
-            var applicationDbContext = _context.SystemTasks.Include(s => s.Parent);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.SystemTasks
+                .Include(t => t.CreatedBy)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(t => t.Code.Contains(vm.Code));
+
+            if (!string.IsNullOrWhiteSpace(vm.Name))
+                query = query.Where(t => t.Name.Contains(vm.Name));
+
+            if (!string.IsNullOrWhiteSpace(vm.CreatedById))
+                query = query.Where(t => t.CreatedById == vm.CreatedById);
+
+            if (vm.CreatedFrom.HasValue)
+                query = query.Where(t => t.CreatedOn >= vm.CreatedFrom.Value);
+
+            if (vm.CreatedTo.HasValue)
+                query = query.Where(t => t.CreatedOn <= vm.CreatedTo.Value);
+
+            vm.Tasks = await query.OrderByDescending(t => t.CreatedOn).ToListAsync();
+            vm.Users = new SelectList(_context.Users, "Id", "FullName");
+
+            return View(vm);
         }
+
 
         // GET: SystemTasks/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -12,9 +12,12 @@ using System.Security.Claims;
 using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.System
 {
+    [Authorize(Roles = "Administrador")]
     public class SystemCodeDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,17 +28,27 @@ namespace HelpdeskSystem.Controllers.System
         }
 
         // GET: SystemCodeDetails
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SystemCodeDetailViewModel vm)
         {
-            
-            var systemCodeDetail = await _context
-                .systemCodeDetails
-                .Include(s => s.SystemCode)
-                .Include(x => x.CreatedBy)
-                .ToListAsync();
+            var query = _context.systemCodeDetails
+                .Include(d => d.SystemCode)
+                .AsQueryable();
 
-            return View(systemCodeDetail);
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(d => d.Code.Contains(vm.Code));
+
+            if (!string.IsNullOrWhiteSpace(vm.Description))
+                query = query.Where(d => d.Description.Contains(vm.Description));
+
+            if (vm.SystemCodeId.HasValue)
+                query = query.Where(d => d.SystemCodeId == vm.SystemCodeId);
+
+            vm.Details = await query.OrderBy(d => d.SystemCodeId).ThenBy(d => d.Code).ToListAsync();
+            vm.SystemCodes = new SelectList(_context.systemCodes, "Id", "Description");
+
+            return View(vm);
         }
+
 
         // GET: SystemCodeDetails/Details/5
         public async Task<IActionResult> Details(int? id)

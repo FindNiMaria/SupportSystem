@@ -1,11 +1,40 @@
-﻿@using HelpdeskSystem.Models.User
-@model IEnumerable<AuditTrail>
+﻿@model HelpdeskSystem.ViewModels.AuditTrailViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Auditoria</h1>
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Módulo</label>
+            <input asp-for="Module" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Ação</label>
+            <input asp-for="Action" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Usuário</label>
+            <select asp-for="UserId" asp-items="Model.Users" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>De</label>
+            <input asp-for="From" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3 mt-2">
+            <label>Até</label>
+            <input asp-for="To" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
 
 <div class="card">
     <div class="card-header">
@@ -38,7 +67,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Logs) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Action)

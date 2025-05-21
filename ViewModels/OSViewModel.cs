@@ -48,7 +48,7 @@ namespace HelpdeskSystem.ViewModels
         public string OSDescription { get; set; }
         public List<OSResolution> OSResolutions { get; set; }
         public OSResolution Resolution { get; set; }
-        public int? AssignedToId { get; set; }
+        public string? AssignedToId { get; set; }
         public ApplicationUser AssignedTo { get; set; }
         public DateTime? AssignedOn { get; set; }
 

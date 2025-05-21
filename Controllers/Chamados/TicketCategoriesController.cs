@@ -9,9 +9,12 @@ using HelpdeskSystem.Models;
 using System.Security.Claims;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.Chamados
 {
+    [Authorize(Roles = "Administrador")]
     public class TicketCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -22,14 +25,36 @@ namespace HelpdeskSystem.Controllers.Chamados
         }
 
         // GET: TicketCategories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(TicketCategoryViewModel vm)
         {
-            var applicationDbContext = _context.TicketCategories
+            var query = _context.TicketCategories
                 .Include(t => t.CreatedBy)
-                .Include(t => t.ModifiedBy);
+                .Include(t => t.ModifiedBy)
+                .Include(t => t.DefautPriority)
+                .AsQueryable();
 
-            return View(await applicationDbContext.ToListAsync());
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(t => t.Code.Contains(vm.Code));
+
+            if (!string.IsNullOrWhiteSpace(vm.Name))
+                query = query.Where(t => t.Name.Contains(vm.Name));
+
+            if (vm.DefaultPriorityId.HasValue)
+                query = query.Where(t => t.DefaultPriorityId == vm.DefaultPriorityId);
+
+            vm.Categories = await query.OrderBy(t => t.Name).ToListAsync();
+
+            vm.Priorities = new SelectList(
+                _context.systemCodeDetails
+                    .Include(x => x.SystemCode)
+                    .Where(x => x.SystemCode.Code == "PRD"),
+                "Id",
+                "Description"
+            );
+
+            return View(vm);
         }
+
 
         // GET: TicketCategories/Details/5
         public async Task<IActionResult> Details(int? id)

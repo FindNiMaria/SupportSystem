@@ -45,17 +45,89 @@ namespace HelpdeskSystem.Controllers.Chamados
         // GET: Tickets
         public async Task<IActionResult> Index(TicketViewModel vm)
         {
-            vm.Tickets = await _context.Tickets
-                .Include(t => t.CreatedBy)
-                .Include(t => t.SubCategory)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            // Consulta base com includes
+            var query = _context.Tickets
+                .Include(t => t.AssignedTo)
                 .Include(t => t.Status)
                 .Include(t => t.Priority)
-                .Include(t => t.TicketComments)
-                .OrderBy(x => x.CreatedOn)
+                .Include(t => t.Category)
+                .Include(t => t.SubCategory)
+                .Include(t => t.CreatedBy)
+                .AsQueryable();
+
+            //  Regras de visibilidade baseadas em permissões
+            if (PermissionHelper.IsAdmin(User))
+            {
+                // Admin vê todos os chamados
+            }
+            else if (PermissionHelper.IsTecnico(User))
+            {
+                query = query.Where(t => t.AssignedToId == userId);
+                
+            }
+            else if (PermissionHelper.IsCoordenador(User))
+            {
+                query = query.Where(t => t.CreatedBy.DepartmentId == user.DepartmentId);
+            }
+            else
+            {
+                query = query.Where(t => t.CreatedById == userId);
+            }
+
+            // Aplicar filtros
+            if (vm.CategoryId > 0)
+                query = query.Where(t => t.CategoryId == vm.CategoryId);
+
+            if (vm.PriorityId > 0)
+                query = query.Where(t => t.PriorityId == vm.PriorityId);
+
+            if (vm.StatusId > 0)
+                query = query.Where(t => t.StatusId == vm.StatusId);
+
+            if (!string.IsNullOrEmpty(vm.TechnicianId))
+                query = query.Where(t => t.AssignedToId == vm.TechnicianId);
+
+            // Obter e ordenar os chamados
+            var tickets = await query
+                .OrderByDescending(t => t.CreatedOn)
                 .ToListAsync();
+
+            // Preencher ViewModel
+            vm.Tickets = tickets.Select(t => new TicketViewModel
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                StatusId = t.StatusId,
+                Status = t.Status,
+                PriorityId = t.PriorityId,
+                Priority = t.Priority,
+                CreatedById = t.CreatedById,
+                CreatedBy = t.CreatedBy,
+                CreatedOn = t.CreatedOn,
+                CategoryId = t.CategoryId,
+                SubCategoryId = t.SubCategoryId ?? 0,
+                SubCategory = t.SubCategory,
+                Attachment = t.Attachment,
+                AssignedToId = t.AssignedToId,
+                AssignedTo = t.AssignedTo,
+                AssignedOn = t.AssignedOn
+            }).ToList();
+
+            // SelectLists para filtros na view
+            vm.Categories = new SelectList(_context.TicketCategories, "Id", "Name");
+            vm.Priorities = new SelectList(_context.systemCodeDetails.Where(x => x.SystemCode.Code == "PRD"), "Id", "Description");
+            vm.Statuses = new SelectList(_context.systemCodeDetails.Where(x => x.SystemCode.Code == "STS"), "Id", "Description");
+            vm.Technicians = new SelectList(_context.Users, "Id", "FullName");
 
             return View(vm);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, TicketViewModel vm)
@@ -189,6 +261,7 @@ namespace HelpdeskSystem.Controllers.Chamados
         }
 
         //GET: Ticket Assignment
+        // GET: Carrega dados para tela de atribuição
         [HttpGet]
         public async Task<IActionResult> TicketAssignment(int id, TicketViewModel vm)
         {
@@ -220,59 +293,73 @@ namespace HelpdeskSystem.Controllers.Chamados
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "FullName");
+            ViewBag.Technicians = new SelectList(
+             await _context.Users
+            .Where(u => u.Role == "Técnico")
+            .ToListAsync(),
+            "Id", "FullName");
             return View(vm);
         }
-        //POST: Add status resolved
+
+
         [HttpPost]
-        public async Task<IActionResult> AssignmentConfirmed(int id, TicketViewModel vm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignmentConfirmed(TicketViewModel vm)
         {
+            
 
-            var assignstatus  = await _context.systemCodeDetails
-                .Include(x => x.SystemCode)
-                .Where(x => x.SystemCode.Code == "STS" && x.Code == "ATB")
-                .FirstOrDefaultAsync();
+            var assignstatus = await _context.systemCodeDetails
+                   .Include(x => x.SystemCode)
+                   .Where(x => x.SystemCode.Code == "STS" && x.Code == "ATB")
+                   .FirstOrDefaultAsync();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            TicketResolution resolution = new();
-            resolution.TicketId = id;
-            resolution.CreatedById = userId;
-            resolution.CreatedOn = DateTime.Now;
-            resolution.StatusId = assignstatus.Id;
-            resolution.Description = "Chamado Atribuído a um Técnico";
-            _context.Add(resolution);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                TicketResolution resolution = new();
+                resolution.TicketId = vm.Id;
+                resolution.CreatedById = userId;
+                resolution.CreatedOn = DateTime.Now;
+                resolution.StatusId = assignstatus.Id;
+                resolution.Description = "Chamado Atribuído a um Técnico";
+                _context.Add(resolution);
+                await _context.SaveChangesAsync();
+
+                var ticket = await _context.Tickets
+                    .Where(x => x.Id == vm.Id)
+                    .FirstOrDefaultAsync();
+
+                ticket.StatusId = assignstatus.Id;
+                ticket.AssignedToId = vm.AssignedToId;
+                ticket.AssignedOn = DateTime.Now;
+                _context.Update(ticket);
+                //Registrar no Log de Auditoria
+
+                var activity = new AuditTrail
+                {
+                    Action = "Atribuição",
+                    TimeStamp = DateTime.Now,
+                    IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    UserId = userId,
+                    Module = "Chamados",
+                    AffectedTable = "Tickets"
+                };
+                _context.Add(activity);
+                var client = await _context.Users.FirstOrDefaultAsync(u => u.Id == resolution.CreatedById);
+                var status = await _context.systemCodeDetails.FindAsync(resolution.StatusId);
+                await _emailTicketService.EnviarEmailAsync(
+                        para: client.Email,
+                        assunto: $"O Chamado nº {resolution.TicketId} foi atribuído a um técnico",
+                        mensagem: $"Seu chamado \"{resolution.TicketId}\"  foi atribuído a um técnico com sucesso, por favor aguarde retorno.");
+
+            
+
             await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+        
 
-            var ticket = await _context.Tickets
-                .Where(x => x.Id == id)
-                .FirstOrDefaultAsync();
 
-            ticket.StatusId = assignstatus.Id;
-            ticket.AssignedToId = vm.AssignedToId;
-            ticket.AssignedOn = DateTime.Now;
-            _context.Update(ticket);
-            //Registrar no Log de Auditoria
 
-            var activity = new AuditTrail
-            {
-                Action = "Atribuição",
-                TimeStamp = DateTime.Now,
-                IpAdress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserId = userId,
-                Module = "Chamados",
-                AffectedTable = "Tickets"
-            };
-            _context.Add(activity);
-            var client = await _context.Users.FirstOrDefaultAsync(u => u.Id == resolution.CreatedById);
-            var status = await _context.systemCodeDetails.FindAsync(resolution.StatusId);
-            await _emailTicketService.EnviarEmailAsync(
-                    para: client.Email,
-                    assunto: $"O Chamado nº {resolution.TicketId} foi atribuído a um técnico",
-                    mensagem: $"Seu chamado \"{resolution.TicketId}\"  foi atribuído a um técnico com sucesso, por favor aguarde retorno.");
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
         // GET: Tickets/Create
         [HttpGet]
         public IActionResult Create()

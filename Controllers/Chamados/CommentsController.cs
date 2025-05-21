@@ -10,6 +10,7 @@ using HelpdeskSystem.Models;
 using System.Security.Claims;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
 
 namespace HelpdeskSystem.Controllers.Chamados
 {
@@ -23,10 +24,34 @@ namespace HelpdeskSystem.Controllers.Chamados
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CommentsViewModel vm)
         {
-            var applicationDbContext = _context.Comment_1.Include(c => c.CreatedBy).Include(c => c.Ticket);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Comment_1
+                .Include(c => c.CreatedBy)
+                .Include(c => c.Ticket)
+                .AsQueryable();
+
+            if (vm.TicketId.HasValue)
+                query = query.Where(c => c.TicketId == vm.TicketId);
+
+            if (!string.IsNullOrWhiteSpace(vm.CreatedById))
+                query = query.Where(c => c.CreatedById == vm.CreatedById);
+
+            if (!string.IsNullOrWhiteSpace(vm.DescriptionKeyword))
+                query = query.Where(c => c.Description.Contains(vm.DescriptionKeyword));
+
+            if (vm.CreatedFrom.HasValue)
+                query = query.Where(c => c.CreatedOn >= vm.CreatedFrom.Value);
+
+            if (vm.CreatedTo.HasValue)
+                query = query.Where(c => c.CreatedOn <= vm.CreatedTo.Value);
+
+            vm.Comments = await query.OrderByDescending(c => c.CreatedOn).ToListAsync();
+
+            vm.Tickets = new SelectList(_context.Tickets, "Id", "Title");
+            vm.Users = new SelectList(_context.Users, "Id", "FullName");
+
+            return View(vm);
         }
         // GET: Comments Criar
         public async Task<IActionResult> TicketComment(int Id)

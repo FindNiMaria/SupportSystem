@@ -10,9 +10,12 @@ using HelpdeskSystem.Data.Migrations;
 using System.Net.Sockets;
 using System.Security.Claims;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.User
 {
+    [Authorize(Roles = "Administrador")]
     public class DepartmentsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,11 +26,21 @@ namespace HelpdeskSystem.Controllers.User
         }
 
         // GET: Departments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DepartmentViewModel vm)
         {
-            var applicationDbContext = _context.Departments.Include(d => d.CreatedBy).Include(d => d.ModifiedBy);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Departments.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(vm.Name))
+                query = query.Where(d => d.Name.Contains(vm.Name));
+
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(d => d.Code.Contains(vm.Code));
+
+            vm.Departments = await query.OrderBy(d => d.Name).ToListAsync();
+
+            return View(vm);
         }
+
 
         // GET: Departments/Details/5
         public async Task<IActionResult> Details(int? id)

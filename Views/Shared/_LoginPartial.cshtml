@@ -3,13 +3,21 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
 
-
+@{
+    var user = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+    var roles = user == null ? new List<string>() : await UserManager.GetRolesAsync(user);
+    bool isAdmin = roles.Contains("Administrador");
+    bool isTecnico = roles.Contains("Tecnico");
+    bool isCoordenador = roles.Contains("Coordenador");
+    bool isUsuarioComum = roles.Contains("UsuarioComum");
+}
 
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-@if (SignInManager.IsSignedIn(User))
-{
-    //Menu Nome de Usuário
+    @if (SignInManager.IsSignedIn(User))
+    {
+        //Menu Nome de Usuário
         <li class="nav-item">
             <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                 <i class="fas fa-user-alt"></i>
@@ -66,126 +74,129 @@
                 </li>
             </ul>
         </li>
-        <!--Menu Usuários-->
-        <li class="nav-item">
-            <a asp-controller="Users" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Usuários
-                </p>
-            </a>
-        </li>
-        <!--Menu Categorias de Chamado / OS-->
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-copy"></i>
-                <p>
-                    Categorias
-                    <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a asp-controller="TicketCategories" asp-action="Index" class="nav-link">
-                        <p>Categoria de Chamado</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="OSCategories" asp-action="Index" class="nav-link">
-                        <p>Categoria de OS</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <!--Menu Subcategorias-->
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-copy"></i>
-                <p>
-                    Sub-Categorias
-                    <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a asp-controller="TicketSubCategories" asp-action="Index" class="nav-link">
-                        <p> Sub-Categorias de Chamado</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="OSSubCategories" asp-action="Index" class="nav-link">
-                        <p>Sub-Categorias de OS</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-       <!--Menu SystemCodes-->
-        <li class="nav-item">
-            <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-copy"></i>
-                <p>
-                    Códigos de Sistema
-                    <i class="fas fa-angle-left right"></i>
-                </p>
-            </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a asp-controller="SystemCodes" asp-action="Index" class="nav-link">
-                        <p> Códigos de Sistema</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="SystemCodeDetails" asp-action="Index" class="nav-link">
-                        <p>Detalhes de Códigos de Sistema</p>
-                    </a>
-                </li>
-            </ul>
-        </li>
-        <!--Menu Departamentos-->
-        <li class="nav-item">
-            <a asp-controller="Departments" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Departamentos
-                </p>
-            </a>
-        </li>
-        <!--Menu SystemTasks-->
-        <li class="nav-item">
-            <a asp-controller="SystemTasks" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Tarefas do Sistema
-                </p>
-            </a>
-        </li>
-        <!--Menu SystemSettings-->
-        <li class="nav-item">
-            <a asp-controller="SystemSettings" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Configurações do Sistema
-                </p>
-            </a>
-        </li>
-        <!--Menu Auditoria-->
-        <li class="nav-item">
-            <a asp-controller="AuditTrails" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Auditoria
-                </p>
-            </a>
-        </li>
-        <!--Menu Permissões-->
-        <li class="nav-item">
-            <a asp-controller="Roles" asp-action="Index" class="nav-link">
-                <i class="nav-icon fas fa-th"></i>
-                <p>
-                    Permissões de Usuário
-                </p>
-            </a>
-        </li>
+        @if (isAdmin)
+        {
+            <!--Menu Usuários-->
+            <li class="nav-item">
+                <a asp-controller="Users" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Usuários
+                    </p>
+                </a>
+            </li>
+            <!--Menu Categorias de Chamado / OS-->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-copy"></i>
+                    <p>
+                        Categorias
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a asp-controller="TicketCategories" asp-action="Index" class="nav-link">
+                            <p>Categoria de Chamado</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="OSCategories" asp-action="Index" class="nav-link">
+                            <p>Categoria de OS</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--Menu Subcategorias-->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-copy"></i>
+                    <p>
+                        Sub-Categorias
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a asp-controller="TicketSubCategories" asp-action="Index" class="nav-link">
+                            <p> Sub-Categorias de Chamado</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="OSSubCategories" asp-action="Index" class="nav-link">
+                            <p>Sub-Categorias de OS</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--Menu SystemCodes-->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-copy"></i>
+                    <p>
+                        Códigos de Sistema
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a asp-controller="SystemCodes" asp-action="Index" class="nav-link">
+                            <p> Códigos de Sistema</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="SystemCodeDetails" asp-action="Index" class="nav-link">
+                            <p>Detalhes de Códigos de Sistema</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--Menu Departamentos-->
+            <li class="nav-item">
+                <a asp-controller="Departments" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Departamentos
+                    </p>
+                </a>
+            </li>
+            <!--Menu SystemTasks-->
+            <li class="nav-item">
+                <a asp-controller="SystemTasks" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Tarefas do Sistema
+                    </p>
+                </a>
+            </li>
+            <!--Menu SystemSettings-->
+            <li class="nav-item">
+                <a asp-controller="SystemSettings" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Configurações do Sistema
+                    </p>
+                </a>
+            </li>
+            <!--Menu Auditoria-->
+            <li class="nav-item">
+                <a asp-controller="AuditTrails" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Auditoria
+                    </p>
+                </a>
+            </li>
+            <!--Menu Permissões-->
+            <li class="nav-item">
+                <a asp-controller="Roles" asp-action="Index" class="nav-link">
+                    <i class="nav-icon fas fa-th"></i>
+                    <p>
+                        Permissões de Usuário
+                    </p>
+                </a>
+            </li>
+        }
         <!--Logout-->
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">

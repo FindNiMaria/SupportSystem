@@ -31,12 +31,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<OSCategory> OSCategories { get; set; }
     public DbSet<OSSubCategory> OSSubCategories { get; set; }
 
-    // Novas entidades para permissionamento
-    public DbSet<Permission> Permissions { get; set; }
-    public DbSet<RolePermission> RolePermissions { get; set; }
-    public DbSet<UserRole> UserRoles { get; set; }
-    public DbSet<UserPermission> UserPermissions { get; set; }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -139,64 +133,62 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         .HasForeignKey(t => t.CategoryId)
         .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<Permission>()
-                .HasIndex(p => p.Code)
-                .IsUnique();
+        builder.Entity<ApplicationUser>()
+        .HasOne(u => u.Department)
+        .WithMany()         
+        .HasForeignKey(u => u.DepartmentId)
+        .IsRequired(false);
 
-        builder.Entity<RolePermission>()
-            .HasOne(rp => rp.Role)
-            .WithMany(r => r.RolePermissions)
-            .HasForeignKey(rp => rp.RoleId);
+        builder.Entity<OSCategory>()
+        .HasOne(c => c.DefaultPriority)
+        .WithMany()
+        .HasForeignKey(c => c.DefaultPriorityId)
+        .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<RolePermission>()
-            .HasOne(rp => rp.Permission)
+        builder.Entity<OSResolution>()
+        .HasOne(r => r.Status)
+        .WithMany()
+        .HasForeignKey(r => r.StatusId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<OSSubCategory>()
+        .HasOne(s => s.Category)
+        .WithMany()
+        .HasForeignKey(s => s.CategoryId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Department>()
+        .HasOne(d => d.CreatedBy)
+        .WithMany()          
+        .HasForeignKey(d => d.CreatedById)
+        .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Department>()
+    .HasOne(d => d.CreatedBy)
+    .WithMany() // sem coleção em ApplicationUser
+    .HasForeignKey(d => d.CreatedById)
+    .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<Department>()
+            .HasOne(d => d.ModifiedBy)
             .WithMany()
-            .HasForeignKey(rp => rp.PermissionId)
+            .HasForeignKey(d => d.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<UserRole>()
-            .HasOne(ur => ur.User)
+        // Exemplo para OSCategory:
+        builder.Entity<OSCategory>()
+            .HasOne(c => c.CreatedBy)
             .WithMany()
-            .HasForeignKey(ur => ur.UserId)
+            .HasForeignKey(c => c.CreatedById)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Entity<UserRole>()
-            .HasOne(ur => ur.Role)
+        builder.Entity<OSCategory>()
+            .HasOne(c => c.ModifiedBy)
             .WithMany()
-            .HasForeignKey(ur => ur.RoleId)
+            .HasForeignKey(c => c.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<UserRole>()
-            .HasOne(ur => ur.Department)
-            .WithMany()
-            .HasForeignKey(ur => ur.DepartmentId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<UserPermission>()
-            .HasOne(up => up.User)
-            .WithMany()
-            .HasForeignKey(up => up.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<UserPermission>()
-            .HasOne(up => up.Permission)
-            .WithMany()
-            .HasForeignKey(up => up.PermissionId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        // Adicionar índices para melhorar a performance
-        builder.Entity<UserRole>()
-            .HasIndex(ur => new { ur.UserId, ur.RoleId, ur.DepartmentId })
-            .IsUnique();
-
-        builder.Entity<UserPermission>()
-            .HasIndex(up => new { up.UserId, up.PermissionId })
-            .IsUnique();
-
-        builder.Entity<RolePermission>()
-            .HasIndex(rp => new { rp.RoleId, rp.PermissionId })
-            .IsUnique();
     }
+
 
     public DbSet<Models.Ticket.Comment> Comment_1 { get; set; } = default!;
     public DbSet<Models.SO.OSComment> OSComment_1 { get; set; } = default!;

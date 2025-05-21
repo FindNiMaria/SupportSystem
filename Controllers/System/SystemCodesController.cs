@@ -11,9 +11,12 @@ using System.Security.Claims;
 using HelpdeskSystem.Models.System;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.System
 {
+    [Authorize(Roles = "Administrador")]
     public class SystemCodesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,16 +27,21 @@ namespace HelpdeskSystem.Controllers.System
         }
 
         // GET: SystemCodes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SystemCodeViewModel vm)
         {
-            var systemCodes = await _context
-                .systemCodes
-                .Include(x=>x.CreatedBy)
-                .ToListAsync();
+            var query = _context.systemCodes.AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(c => c.Code.Contains(vm.Code));
 
-            return View(systemCodes);
+            if (!string.IsNullOrWhiteSpace(vm.Description))
+                query = query.Where(c => c.Description.Contains(vm.Description));
+
+            vm.Codes = await query.OrderBy(c => c.Code).ToListAsync();
+
+            return View(vm);
         }
+
 
         // GET: SystemCodes/Details/5
         public async Task<IActionResult> Details(int? id)

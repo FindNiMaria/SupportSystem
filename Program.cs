@@ -16,7 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString)
+    .EnableSensitiveDataLogging()
+    .LogTo(Console.WriteLine, LogLevel.Information));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddHangfire(config =>
@@ -34,7 +37,7 @@ builder.Services.AddRazorPages();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<EmailSettings>>().Value);
-
+           
 // Registrar o serviço que envia/recebe emails
 builder.Services.AddScoped<IEmailTicketService, EmailTicketService>();
 
@@ -67,6 +70,22 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = new[] { "Administrador", "Tecnico", "Coordenador", "UsuarioComum" };
+
+    foreach (var role in roles)
+    {
+        var roleExists = await roleManager.RoleExistsAsync(role);
+        if (!roleExists)
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
 app.MapHangfireDashboard();
 app.MapControllerRoute(
     name: "default",

@@ -111,7 +111,7 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            ///Email
+            ///Telefone
             [Required]
             
             [Display(Name = "Telefone")]
@@ -142,6 +142,16 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            if (!ModelState.IsValid)
+            {
+                foreach (var kvp in ModelState)
+                {
+                    foreach (var error in kvp.Value.Errors)
+                    {
+                        _logger.LogError($"Erro no campo {kvp.Key}: {error.ErrorMessage}");
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
@@ -149,6 +159,7 @@ namespace HelpdeskSystem.Areas.Identity.Pages.Account
                 user.LastName = Input.LastName;
                 user.Gender = Input.Gender;
                 user.Country = Input.Country;
+                user.PhoneNumber = Input.Telephone;
                 user.City = Input.City;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

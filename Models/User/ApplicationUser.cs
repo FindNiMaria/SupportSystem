@@ -26,6 +26,13 @@ namespace HelpdeskSystem.Models.User
 
         [DisplayName("Cidade")]
         public string City { get; set; }
+
+        [DisplayName("Departamento")]
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
+
+        [DisplayName("Permissão")]
+        public string? Role { get; set; } // "Admin", "Tecnico", "Coordenador", "Usuario"
         public string FullName => $"{FirstName} {LastName}";
     }
 }

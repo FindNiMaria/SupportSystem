@@ -1,6 +1,6 @@
-﻿    @using HelpdeskSystem.Models.User
+﻿@using HelpdeskSystem.Models.User
 @using Microsoft.AspNetCore.Identity
-    @model IEnumerable<HelpdeskSystem.Models.Ticket.Ticket>
+@model IEnumerable<HelpdeskSystem.ViewModels.TicketOsViewModel>
     @inject SignInManager<ApplicationUser> SignInManager
     @inject UserManager<ApplicationUser> UserManager
 @{
@@ -14,7 +14,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3><span>@ViewBag.totalAberto</span></h3>
+                    <h3><span>@ViewBag.ticketsAbertos</span></h3>
 
                     <p>Novos Chamados</p>
                 </div>
@@ -29,7 +29,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3><span>@ViewBag.totalFechado</span></h3>
+                    <h3><span>@ViewBag.ticketsFechados</span></h3>
 
                     <p>Chamados Atendidos</p>
                 </div>
@@ -44,7 +44,7 @@
             <!-- small box -->
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>@ViewBag.totalOSAberto</h3>
+                    <h3>@ViewBag.OSAbertas</h3>
 
                     <p> Novas Ordens de Serviço</p>
                 </div>
@@ -59,7 +59,7 @@
             <!-- small box -->
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>@ViewBag.totalOSFechado</h3>
+                    <h3>@ViewBag.OSFechadas</h3>
 
                     <p>Ordens de Serviço Atendidas</p>
                 </div>
@@ -81,13 +81,10 @@
                         @Html.DisplayNameFor(model => model.Title)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Status)
+                        @Html.DisplayNameFor(model => model.StatusSystemCode)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Priority)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
+                        @Html.DisplayNameFor(model => model.Type)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedOn)
@@ -109,13 +106,10 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @Html.DisplayFor(modelItem => item.StatusCode)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
+                @Html.DisplayFor(modelItem => item.Type)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedOn)

@@ -9,6 +9,6 @@ namespace HelpdeskSystem.Models.SO
         public string Code { get; set; }
         public string Name { get; set; }
         public int? DefaultPriorityId { get; set; }
-        public SystemCodeDetail DefautPriority { get; set; }
+        public SystemCodeDetail DefaultPriority { get; set; }
     }
 }

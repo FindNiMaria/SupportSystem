@@ -4,6 +4,7 @@ using HelpdeskSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpdeskSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519233253_ROleNulo")]
+    partial class ROleNulo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +36,10 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<DateTime?>("AssignedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AssignedToId")
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignedToId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Attachment")
@@ -74,7 +80,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedToId");
+                    b.HasIndex("AssignedToId1");
 
                     b.HasIndex("CategoryId");
 
@@ -487,7 +493,10 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<DateTime?>("AssignedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AssignedToId")
+                    b.Property<int?>("AssignedToId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignedToId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Attachment")
@@ -528,7 +537,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedToId");
+                    b.HasIndex("AssignedToId1");
 
                     b.HasIndex("CategoryId");
 
@@ -983,7 +992,7 @@ namespace HelpdeskSystem.Data.Migrations
                 {
                     b.HasOne("HelpdeskSystem.Models.User.ApplicationUser", "AssignedTo")
                         .WithMany()
-                        .HasForeignKey("AssignedToId");
+                        .HasForeignKey("AssignedToId1");
 
                     b.HasOne("HelpdeskSystem.Models.Ticket.TicketCategory", "Category")
                         .WithMany()
@@ -1256,7 +1265,7 @@ namespace HelpdeskSystem.Data.Migrations
                 {
                     b.HasOne("HelpdeskSystem.Models.User.ApplicationUser", "AssignedTo")
                         .WithMany()
-                        .HasForeignKey("AssignedToId");
+                        .HasForeignKey("AssignedToId1");
 
                     b.HasOne("HelpdeskSystem.Models.Ticket.TicketCategory", "Category")
                         .WithMany()

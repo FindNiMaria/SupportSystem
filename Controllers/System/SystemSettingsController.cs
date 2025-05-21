@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using HelpdeskSystem.Data;
 using System.Security.Claims;
 using HelpdeskSystem.Models.System;
+using HelpdeskSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.System
 {
+    [Authorize(Roles = "Administrador")]
     public class SystemSettingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,11 +24,21 @@ namespace HelpdeskSystem.Controllers.System
         }
 
         // GET: SystemSettings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SystemSettingsViewModel vm)
         {
-            var applicationDbContext = _context.SystemSettings.Include(s => s.CreatedBy).Include(s => s.ModifiedBy);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.SystemSettings.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(s => s.Code.Contains(vm.Code));
+
+            if (!string.IsNullOrWhiteSpace(vm.Name))
+                query = query.Where(s => s.Name.Contains(vm.Name));
+
+            vm.Settings = await query.OrderBy(s => s.Code).ToListAsync();
+
+            return View(vm);
         }
+
 
         // GET: SystemSettings/Details/5
         public async Task<IActionResult> Details(int? id)

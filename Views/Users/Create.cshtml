@@ -69,12 +69,35 @@
                         <input asp-for="Gender" class="form-control" />
                         <span asp-validation-for="Gender" class="text-danger"></span>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Role" class="control-label"></label>
+                            <select asp-for="Role" class="form-control">
+                                <option value="">-- Selecione uma Permissão --</option>
+                                <option value="Admin">Administrador</option>
+                                <option value="Tecnico">Técnico</option>
+                                <option value="Coordenador">Coordenador</option>
+                                <option value="Usuario">Usuário</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="DepartmentId" class="control-label"></label>
+                            <select asp-for="DepartmentId" class="form-control"
+                                    asp-items="ViewBag.Departments">
+                                <option value="">-- Selecione um Departamento --</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="PasswordHash" class="control-label"></label>
-                        <input asp-for="PasswordHash" class="form-control" />
-                        <span asp-validation-for="PasswordHash" class="text-danger"></span>
+                        <label for="password">Senha</label>
+                        <input type="password" name="password" class="form-control" required />
                     </div>
                 </div>
             </div>

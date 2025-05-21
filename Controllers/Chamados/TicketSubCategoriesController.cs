@@ -11,9 +11,11 @@ using System.Security.Claims;
 using HelpdeskSystem.ViewModels;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HelpdeskSystem.Controllers.Chamados
 {
+    [Authorize(Roles = "Administrador")]
     public class TicketSubCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,18 +26,28 @@ namespace HelpdeskSystem.Controllers.Chamados
         }
 
         // GET: TicketSubCategories
-        public async Task<IActionResult> Index(int id, TicketSubCategoriesVM vm)
+        public async Task<IActionResult> Index(int id, TicketSubCategoryViewModel vm)
         {
-            vm.TicketSubCategories = await _context.TicketSubCategories
+            var query = _context.TicketSubCategories
                 .Include(t => t.Category)
                 .Include(t => t.CreatedBy)
                 .Include(t => t.ModifiedBy)
-                .Where(x=>x.CategoryId == id)
-                .ToListAsync();
+                .Where(x => x.CategoryId == id)
+                .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(vm.Code))
+                query = query.Where(x => x.Code.Contains(vm.Code));
+
+            if (!string.IsNullOrWhiteSpace(vm.Name))
+                query = query.Where(x => x.Name.Contains(vm.Name));
+
+            vm.TicketSubCategories = await query.ToListAsync();
             vm.CategoryId = id;
+            vm.Categories = new SelectList(_context.TicketCategories, "Id", "Name");
+
             return View(vm);
         }
+
 
         // GET: TicketSubCategories/Details/5
         public async Task<IActionResult> Details(int? id)

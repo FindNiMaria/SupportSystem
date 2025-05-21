@@ -1,14 +1,42 @@
-﻿@using HelpdeskSystem.Models.System
-@model IEnumerable<SystemTask>
-
+﻿@model HelpdeskSystem.ViewModels.SystemTaskViewModel
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Módulo</label>
+            <input asp-for="Code" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Ação</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Usuário</label>
+            <select asp-for="CreatedById" asp-items="Model.Users" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>De:</label>
+            <input asp-for="CreatedFrom" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3 mt-2">
+            <label>Até:</label>
+            <input asp-for="CreatedTo" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Criar Novo</a>
 </p>
 <table class="table">
     <thead>
@@ -20,16 +48,16 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Parent)
+                Ligado a
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OrderNo)
+                Ordem Nº
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Tasks) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Code)

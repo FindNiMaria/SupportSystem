@@ -1,11 +1,43 @@
-﻿@model IEnumerable<HelpdeskSystem.Models.Ticket.Comment>
+﻿@model HelpdeskSystem.ViewModels.CommentsViewModel
+
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Observação</h1>
-
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Chamado</label>
+            <select asp-for="TicketId" asp-items="Model.Tickets" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Usuário</label>
+            <select asp-for="CreatedById" asp-items="Model.Users" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Palavra-chave</label>
+            <input asp-for="DescriptionKeyword" class="form-control" placeholder="Buscar na descrição..." />
+        </div>
+        <div class="col-md-3">
+            <label>Data Inicial</label>
+            <input asp-for="CreatedFrom" class="form-control" type="date" />
+        </div>
+        <div class="col-md-3 mt-2">
+            <label>Data Final</label>
+            <input asp-for="CreatedTo" class="form-control" type="date" />
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
 <p>
     <a class="btn btn-dark"asp-action="Create">Criar Nova</a>
 </p>
@@ -36,7 +68,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Comments) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)

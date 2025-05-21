@@ -1,10 +1,10 @@
 ﻿@model HelpdeskSystem.ViewModels.TicketViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "TicketAssignment";
 }
 
-<h1>Detalhes</h1>
+<h1>Atribuir Chamado</h1>
 
 <div class="card">
     <div class="card-header">
@@ -156,13 +156,13 @@
                 <div class="row mt-3 me-1">
                     <div class="row">
                         <label class="control-label">Atribuir chamado a:</label>
-                        <select asp-for="AssignedToId" class="form-control" asp-items="ViewBag.UserId"></select>
+                        <select asp-for="AssignedToId" class="form-control" asp-items="ViewBag.Technicians"></select>
                     </div>
                     <div class="row">
                         <label class="control-label">Insira uma observação final:</label>
                         <textarea asp-for="TicketDescription" class="form-control w-100" rows="4"></textarea>
                     </div>
-                    <button class="btn btn-primary mt-3 mb-3">Resolver</button>
+                    <button class="btn btn-primary mt-3 mb-3">Atribuir</button>
                 </div>
             </form>
         </div>

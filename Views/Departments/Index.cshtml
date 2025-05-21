@@ -1,11 +1,26 @@
-﻿@using HelpdeskSystem.Models.User
-@model IEnumerable<Department>
+﻿@model HelpdeskSystem.ViewModels.DepartmentViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Departamentos</h1>
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Nome</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Código</label>
+            <input asp-for="Code" class="form-control" />
+        </div>
+        <div class="col-md-4 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Criar novo</a>
@@ -26,10 +41,10 @@
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.CreatedBy)
+                    Criado Por
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.CreatedOn)
+                    Criado Em
                 </th>
                 <th>Editar</th>
                 <th>Detalhes</th>
@@ -37,7 +52,7 @@
             </tr>
         </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Departments) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Code)
