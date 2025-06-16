@@ -130,6 +130,67 @@ namespace HelpdeskSystem.Controllers.SO
             return View(vm);
         }
 
+        public IActionResult RelatorioTecnicos(TechnicianPerformanceReportViewModel filtro)
+        {
+            var statusResolvidoId = _context.systemCodeDetails
+                .FirstOrDefault(s => s.Code == "CON")?.Id;
+
+            if (statusResolvidoId == null)
+            {
+                return BadRequest("Status 'CONCLUIDO' não encontrado.");
+            }
+
+            var query = _context.OS
+                .Include(o => o.AssignedTo)
+                .Where(o =>
+                    o.StatusId == statusResolvidoId &&
+                    o.AssignedToId != null &&
+                    o.AssignedOn != null
+                );
+
+            if (filtro.CategoryId.HasValue)
+                query = query.Where(o => o.CategoryId == filtro.CategoryId.Value);
+
+            if (!string.IsNullOrEmpty(filtro.TechnicianId))
+                query = query.Where(o => o.AssignedToId == filtro.TechnicianId);
+
+            if (filtro.StartDate.HasValue)
+                query = query.Where(o => o.CreatedOn >= filtro.StartDate.Value);
+
+            if (filtro.EndDate.HasValue)
+                query = query.Where(o => o.CreatedOn <= filtro.EndDate.Value);
+
+            // Trazer para memória para usar a propriedade FullName do técnico
+            var resultado = query
+                .AsEnumerable()
+                .GroupBy(o => o.AssignedTo)
+                .Select(g => new TechnicianPerformanceViewModel
+                {
+                    TechnicianName = g.Key.FullName ?? "Sem Nome",
+                    ResolvedCount = g.Count(),
+                    AverageResolutionTimeHours = g.Average(o =>
+                        (o.AssignedOn.Value - o.CreatedOn).TotalHours)
+                })
+                .OrderByDescending(r => r.ResolvedCount)
+                .ToList();
+
+            filtro.Results = resultado;
+
+            filtro.Categories = _context.OSCategories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
+            filtro.Technicians = _context.Users
+                .Where(u => u.Role == "Técnico")
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id,
+                    Text = t.FirstName + " " + t.LastName
+                })
+                .ToList();
+
+            return View(filtro);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, OSViewModel vm)

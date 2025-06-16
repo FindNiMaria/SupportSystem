@@ -1,0 +1,63 @@
+﻿@model HelpdeskSystem.ViewModels.TechnicianPerformanceReportViewModel
+
+@{
+    ViewData["Title"] = "Relatório de Técnicos";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="get" asp-action="RelatorioTecnicos">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Categoria</label>
+            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Técnico</label>
+            <select asp-for="TechnicianId" asp-items="Model.Technicians" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Data Inicial</label>
+            <input asp-for="StartDate" class="form-control" type="date" />
+        </div>
+        <div class="col-md-3">
+            <label>Data Final</label>
+            <input asp-for="EndDate" class="form-control" type="date" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+</form>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Chamados: </h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Técnico</th>
+                <th>Chamados Resolvidos</th>
+                <th>Tempo Médio de Resolução (h)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results)
+            {
+                <tr>
+                    <td>@item.TechnicianName</td>
+                    <td>@item.ResolvedCount</td>
+                        <td>@item.AverageResolutionTimeHours.ToString("F2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+    </div>
+    
+}
+

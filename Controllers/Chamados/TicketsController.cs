@@ -17,6 +17,7 @@ using MailKit;
 using HelpdeskSystem.Services;
 using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.Models.User;
+using System.Data;
 
 
 namespace HelpdeskSystem.Controllers.Chamados
@@ -130,6 +131,67 @@ namespace HelpdeskSystem.Controllers.Chamados
             return View(vm);
         }
 
+        public IActionResult RelatorioTecnicos(TechnicianPerformanceReportViewModel filtro)
+        {
+            var statusResolvidoId = _context.systemCodeDetails
+                .FirstOrDefault(s => s.Code == "CON")?.Id;
+
+            if (statusResolvidoId == null)
+            {
+                return BadRequest("Status 'CONCLUIDO' não encontrado.");
+            }
+
+            var query = _context.Tickets
+                .Include(t => t.AssignedTo)
+                .Where(t =>
+                    t.StatusId == statusResolvidoId &&
+                    t.AssignedToId != null &&
+                    t.AssignedOn != null
+                );
+
+            if (filtro.CategoryId.HasValue)
+                query = query.Where(t => t.CategoryId == filtro.CategoryId.Value);
+
+            if (!string.IsNullOrEmpty(filtro.TechnicianId))
+                query = query.Where(t => t.AssignedToId == filtro.TechnicianId);
+
+            if (filtro.StartDate.HasValue)
+                query = query.Where(t => t.CreatedOn >= filtro.StartDate.Value);
+
+            if (filtro.EndDate.HasValue)
+                query = query.Where(t => t.CreatedOn <= filtro.EndDate.Value);
+
+            // Passa pra memória pra usar a propriedade FullName
+            var resultado = query
+                .AsEnumerable() // Atenção: traz para memória!
+                .GroupBy(t => t.AssignedTo)
+                .Select(g => new TechnicianPerformanceViewModel
+                {
+                    TechnicianName = g.Key.FullName ?? "Sem Nome",
+                    ResolvedCount = g.Count(),
+                    AverageResolutionTimeHours = g.Average(t =>
+                        (t.AssignedOn.Value - t.CreatedOn).TotalHours)
+                })
+                .OrderByDescending(r => r.ResolvedCount)
+                .ToList();
+
+            filtro.Results = resultado;
+
+            filtro.Categories = _context.TicketCategories
+                .Select(c => new SelectListItem { Value = c.Id.ToString(), Text = c.Name })
+                .ToList();
+
+            filtro.Technicians = _context.Users
+                .Where(u => u.Role == "Técnico")
+                .Select(t => new SelectListItem
+                {
+                    Value = t.Id,
+                    Text = t.FirstName + " " + t.LastName
+                })
+                .ToList();
+
+            return View(filtro);
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, TicketViewModel vm)
