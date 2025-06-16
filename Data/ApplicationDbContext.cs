@@ -187,6 +187,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .WithMany()
             .HasForeignKey(c => c.ModifiedById)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<AuditTrail>()
+            .HasOne(a => a.User)
+            .WithMany()
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 
 

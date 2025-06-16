@@ -1,0 +1,88 @@
+﻿@model HelpdeskSystem.ViewModels.OSCategoryViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Código</label>
+            <input asp-for="Code" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Nome</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Prioridade Padrão</label>
+            <select asp-for="DefaultPriorityId" asp-items="Model.Priorities" class="form-control">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
+<p>
+    <a class="btn btn-dark" asp-action="Create">Nova Categoria</a>
+</p>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Categorias: </h3>
+    </div>
+
+    <div class="card-body">
+        <table id="example1" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Code)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        Criado Por
+                    </th>
+                    <th>
+                        Criado Em
+                    </th>
+                    <th>Editar</th>
+                    <th>Sub-Categorias</th>
+                    <th>Apagar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Categories)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Code)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-warning" asp-action="Index" asp-controller="OSSubCategories" asp-route-id="@item.Id">Sub-Categorias</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

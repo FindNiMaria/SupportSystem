@@ -34,10 +34,16 @@ namespace HelpdeskSystem.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("AssignedToId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Atribuído a")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Categoria:")
+                        .HasColumnType("int");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
@@ -65,6 +71,9 @@ namespace HelpdeskSystem.Data.Migrations
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubCategoria:")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SubCategoryId")
                         .HasColumnType("int");
 
@@ -74,7 +83,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedToId");
+                    b.HasIndex("Atribuído a");
 
                     b.HasIndex("CategoryId");
 
@@ -86,7 +95,7 @@ namespace HelpdeskSystem.Data.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.HasIndex("SubCategoryId");
+                    b.HasIndex("SubCategoria:");
 
                     b.ToTable("OS");
                 });
@@ -983,9 +992,9 @@ namespace HelpdeskSystem.Data.Migrations
                 {
                     b.HasOne("HelpdeskSystem.Models.User.ApplicationUser", "AssignedTo")
                         .WithMany()
-                        .HasForeignKey("AssignedToId");
+                        .HasForeignKey("Atribuído a");
 
-                    b.HasOne("HelpdeskSystem.Models.Ticket.TicketCategory", "Category")
+                    b.HasOne("HelpdeskSystem.Models.SO.OSCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1013,9 +1022,11 @@ namespace HelpdeskSystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HelpdeskSystem.Models.Ticket.TicketSubCategory", "SubCategory")
+                    b.HasOne("HelpdeskSystem.Models.SO.OSSubCategory", "SubCategory")
                         .WithMany()
-                        .HasForeignKey("SubCategoryId");
+                        .HasForeignKey("SubCategoria:")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AssignedTo");
 

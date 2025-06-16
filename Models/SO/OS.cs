@@ -1,5 +1,5 @@
 ﻿using HelpdeskSystem.Models.System;
-using HelpdeskSystem.Models.Ticket;
+using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.User;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,14 +28,16 @@ namespace HelpdeskSystem.Models.SO
         [DisplayName("Categoria: ")]
         public int CategoryId { get; set; }
 
+        [DisplayName("Categoria: ")]
         [ForeignKey("CategoryId")]
-        public TicketCategory Category { get; set; }
+        public OSCategory Category { get; set; }
 
         [DisplayName("Sub-Categoria: ")]
         public int? SubCategoryId { get; set; }
 
+        [DisplayName("Sub-Categoria: ")]
         [ForeignKey("SubCategoryId")]
-        public TicketSubCategory SubCategory { get; set; }
+        public OSSubCategory SubCategory { get; set; }
 
         [DisplayName("Anexo: ")]
         public string? Attachment { get; set; }

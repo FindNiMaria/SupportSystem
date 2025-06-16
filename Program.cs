@@ -40,7 +40,7 @@ builder.Services.AddSingleton(resolver =>
            
 // Registrar o serviço que envia/recebe emails
 builder.Services.AddScoped<IEmailTicketService, EmailTicketService>();
-
+builder.Services.AddScoped<IEmailOSService, EmailOSService>();
 builder.Services.AddScoped<TicketPriorityJob>();
 
 var app = builder.Build();

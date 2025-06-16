@@ -58,5 +58,49 @@ namespace HelpdeskSystem.Controllers
                 return Json(new { });
             }
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<JsonResult> GetOSSubCategories(int Id)
+        {
+            try
+            {
+                var subcategories = await _context
+                    .OSSubCategories
+                    .Where(x => x.CategoryId == Id)
+                    .OrderBy(c => c.Name)
+                    .Select(i => new { id = i.Id, name = i.Name })
+                    .Distinct()
+                    .ToListAsync();
+
+                return Json(subcategories);
+            }
+            catch (Exception)
+            {
+                return Json(new { });
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<JsonResult> GetOSCategoriaPrioridade(int categoriaId)
+        {
+            try
+            {
+                var categoria = await _context.OSCategories
+                    .Include(c => c.DefaultPriority)
+                    .FirstOrDefaultAsync(c => c.Id == categoriaId);
+
+                if (categoria?.DefaultPriority != null)
+                {
+                    return Json(new { id = categoria.DefaultPriority.Id, descricao = categoria.DefaultPriority.Description });
+                }
+
+                return Json(new { });
+            }
+            catch (Exception)
+            {
+                return Json(new { });
+            }
+        }
     }
 }

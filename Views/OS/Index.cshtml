@@ -4,17 +4,51 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Chamados</h1>
-
+<h1>Ordens de Serviço</h1>
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Categoria</label>
+            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Prioridade</label>
+            <select asp-for="PriorityId" asp-items="Model.Priorities" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Status</label>
+            <select asp-for="StatusId" asp-items="Model.Statuses" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Técnico</label>
+            <select asp-for="TechnicianId" asp-items="Model.Technicians" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+            <a asp-action="Create" class="btn btn-dark mt-2">Nova OS</a>
+        </div>
+    </div>
+</form>
 <p>
-    <a class="btn btn-dark" asp-action="Create">Nova Ordem de Serviço</a>
-    <form asp-action="ImportEmails" method="post" class="mb-3">
-        <button type="submit" class="btn btn-primary">Importar E-mails</button>
-    </form>
+    @if (User.IsInRole("Administrador"))
+    {
+        <form asp-action="ImportEmails" method="post" class="mb-3">
+            <button type="submit" class="btn btn-primary">Importar E-mails</button>
+        </form>
+    }
 </p>
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Ordem de Serviço: </h3>
+        <h3 class="card-title">Ordens de Serviço: </h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -37,13 +71,16 @@
                         @Html.DisplayNameFor(model => model.PriorityId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
+                        Criado por:
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedOn)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.OSDuration)
+                    </th>
+                    <th>
+                        Atríbuido a:
                     </th>
                     <th>Nº de Obs.</th>
                     <th>Ações</th>
@@ -62,7 +99,7 @@
                     }
                     else if (item.Status.Code == "AND")
                     {
-                        colorcode = "Yellow";
+                        colorcode = "Orange";
                     }
                     else if (item.Status.Code == "PND")
                     {
@@ -97,10 +134,15 @@
                             @Html.DisplayFor(modelItem => item.CreatedOn)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.OSDuration)
+                            @($"{item.OSDuration} dias")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AssignedTo.FullName)
                         </td>
                         <td style="text-align: center">
-                            @Html.DisplayFor(modelItem => item.OSComments.Count)
+                            <a asp-controller="Comments" asp-action="Index" asp-route-ticketId="@item.Id">
+                                @Html.DisplayFor(modelItem => item.OSComments.Count)
+                            </a>
                         </td>
                         <td>
                             <div class="ms-auto">
@@ -116,7 +158,10 @@
                                         <li><hr class="dropdown-divider" /></li>
                                         <li><a class="dropdown-item" asp-action="Delete" asp-route-id="@item.Id">Apagar</a></li>
                                         <li><hr class="dropdown-divider" /></li>
-                                        <li><a class="dropdown-item" asp-action="TicketAssignment" asp-route-id="@item.Id">Atribuir</a></li>
+                                        @if (User.IsInRole("Administrador"))
+                                        {
+                                            <li><a class="dropdown-item" asp-action="OSAssignment" asp-route-id="@item.Id">Atribuir</a></li>
+                                        }
                                         <li><hr class="dropdown-divider" /></li>
                                         <li><a class="dropdown-item" asp-action="Resolve" asp-route-id="@item.Id">Resolver</a></li>
                                     </ul>

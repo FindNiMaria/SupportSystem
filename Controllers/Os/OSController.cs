@@ -17,7 +17,6 @@ using MailKit;
 using HelpdeskSystem.Services;
 using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.User;
-using HelpdeskSystem.Data.Migrations;
 
 
 namespace HelpdeskSystem.Controllers.SO
@@ -26,37 +25,111 @@ namespace HelpdeskSystem.Controllers.SO
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IEmailTicketService _emailTicketService;
+        private readonly IEmailOSService _emailOSService;
 
 
-        public OSController(ApplicationDbContext context, IConfiguration configuration, IEmailTicketService emailTicketService)
+        public OSController(ApplicationDbContext context, IConfiguration configuration, IEmailOSService emailOSService)
         {
 
             _context = context;
             _configuration = configuration;
-            _emailTicketService = emailTicketService;
+            _emailOSService = emailOSService;
 
         }
 
         public async Task<IActionResult> ImportEmails()
         {
-            await _emailTicketService.ImportarEmailsComoTicketsAsync();
+            await _emailOSService.ImportarEmailsComoOSAsync();
             return RedirectToAction("Index");
         }
         // GET: Tickets
         public async Task<IActionResult> Index(OSViewModel vm)
         {
-            vm.OS = await _context.OS
-                .Include(t => t.CreatedBy)
-                .Include(t => t.SubCategory)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            // Consulta base com includes
+            var query = _context.OS
+                .Include(t => t.AssignedTo)
                 .Include(t => t.Status)
                 .Include(t => t.Priority)
+                .Include(t => t.Category)
+                .Include(t => t.SubCategory)
+                .Include(t => t.CreatedBy)
                 .Include(t => t.OSComments)
-                .OrderBy(x => x.CreatedOn)
+                .AsQueryable();
+
+            //  Regras de visibilidade baseadas em permissões
+            if (PermissionHelper.IsAdmin(User))
+            {
+                // Admin vê todos os chamados
+            }
+            else if (PermissionHelper.IsTecnico(User))
+            {
+                query = query.Where(t => t.AssignedToId == userId);
+
+            }
+            else if (PermissionHelper.IsCoordenador(User))
+            {
+                query = query.Where(t => t.CreatedBy.DepartmentId == user.DepartmentId);
+            }
+            else
+            {
+                query = query.Where(t => t.CreatedById == userId);
+            }
+
+            // Aplicar filtros
+            if (vm.CategoryId > 0)
+                query = query.Where(t => t.CategoryId == vm.CategoryId);
+
+            if (vm.PriorityId > 0)
+                query = query.Where(t => t.PriorityId == vm.PriorityId);
+
+            if (vm.StatusId > 0)
+                query = query.Where(t => t.StatusId == vm.StatusId);
+
+            if (!string.IsNullOrEmpty(vm.TechnicianId))
+                query = query.Where(t => t.AssignedToId == vm.TechnicianId);
+
+            // Obter e ordenar os chamados
+            var os = await query
+                .OrderByDescending(t => t.CreatedOn)
                 .ToListAsync();
+
+            // Preencher ViewModel
+            vm.OS = os.Select(t => new OSViewModel
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                StatusId = t.StatusId,
+                Status = t.Status,
+                PriorityId = t.PriorityId,
+                Priority = t.Priority,
+                CreatedById = t.CreatedById,
+                CreatedBy = t.CreatedBy,
+                CreatedOn = t.CreatedOn,
+                CategoryId = t.CategoryId,
+                SubCategoryId = t.SubCategoryId ?? 0,
+                SubCategory = t.SubCategory,
+                Attachment = t.Attachment,
+                AssignedToId = t.AssignedToId,
+                AssignedTo = t.AssignedTo,
+                AssignedOn = t.AssignedOn,
+                OSComments = t.OSComments.ToList()
+            }).ToList();
+
+            // SelectLists para filtros na view
+            vm.Categories = new SelectList(_context.OSCategories, "Id", "Name");
+            vm.Priorities = new SelectList(_context.systemCodeDetails.Where(x => x.SystemCode.Code == "PRD"), "Id", "Description");
+            vm.Statuses = new SelectList(_context.systemCodeDetails.Where(x => x.SystemCode.Code == "STS"), "Id", "Description");
+            vm.Technicians = new SelectList(_context.Users, "Id", "FullName");
 
             return View(vm);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, OSViewModel vm)
@@ -84,8 +157,7 @@ namespace HelpdeskSystem.Controllers.SO
             await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id });
         }
-
-        //POST
+        //POST: Add status resolved
         [HttpPost]
         public async Task<IActionResult> ResolvedConfirmed(int id, OSViewModel vm)
         {
@@ -94,7 +166,7 @@ namespace HelpdeskSystem.Controllers.SO
             resolution.OSId = id;
             resolution.CreatedById = userId;
             resolution.CreatedOn = DateTime.Now;
-            resolution.Description = vm.OSDescription;
+            resolution.Description = vm.OSDescription ?? "Sem Descrição";
             resolution.StatusId = vm.StatusId;
             _context.Add(resolution);
             await _context.SaveChangesAsync();
@@ -119,10 +191,10 @@ namespace HelpdeskSystem.Controllers.SO
             _context.Add(activity);
             var client = await _context.Users.FirstOrDefaultAsync(u => u.Id == resolution.CreatedById);
             var status = await _context.systemCodeDetails.FindAsync(resolution.StatusId);
-            await _emailTicketService.EnviarEmailAsync(
+            await _emailOSService.EnviarEmailAsync(
                     para: client.Email,
-                    assunto: $"A Ordem de serviço nº {resolution.OSId} recebeu atualizações",
-                    mensagem: $"Sua Ordem de serviço \"{resolution.OSId}\" foi atualizado por um técnico com sucesso e está com status \"{status?.Description}\".\n\n\"{resolution.Description}\"");
+                    assunto: $"A OS nº {resolution.OSId} recebeu atualizações",
+                    mensagem: $"Sua OS \"{resolution.OSId}\" foi atualizada por um técnico com sucesso e está com status \"{status?.Description}\".\n\n\"{resolution.Description}\"");
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -155,7 +227,7 @@ namespace HelpdeskSystem.Controllers.SO
 
             return View(vm);
         }
-        //GET: Ticket Resolve
+        //GET: OS Resolve
         public async Task<IActionResult> Resolve(int id, OSViewModel vm)
         {
             if (id == null)
@@ -191,6 +263,7 @@ namespace HelpdeskSystem.Controllers.SO
         }
 
         //GET: Ticket Assignment
+        // GET: Carrega dados para tela de atribuição
         [HttpGet]
         public async Task<IActionResult> OSAssignment(int id, OSViewModel vm)
         {
@@ -222,31 +295,38 @@ namespace HelpdeskSystem.Controllers.SO
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "FullName");
+            ViewBag.Technicians = new SelectList(
+             await _context.Users
+            .Where(u => u.Role == "Técnico")
+            .ToListAsync(),
+            "Id", "FullName");
             return View(vm);
         }
-        //POST: Add status resolved
+
+
         [HttpPost]
-        public async Task<IActionResult> AssignmentConfirmed(int id, TicketViewModel vm)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignmentConfirmed(OSViewModel vm)
         {
 
+
             var assignstatus = await _context.systemCodeDetails
-                .Include(x => x.SystemCode)
-                .Where(x => x.SystemCode.Code == "STS" && x.Code == "ATB")
-                .FirstOrDefaultAsync();
+                   .Include(x => x.SystemCode)
+                   .Where(x => x.SystemCode.Code == "STS" && x.Code == "ATB")
+                   .FirstOrDefaultAsync();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             OSResolution resolution = new();
-            resolution.OSId = id;
+            resolution.OSId = vm.Id;
             resolution.CreatedById = userId;
             resolution.CreatedOn = DateTime.Now;
             resolution.StatusId = assignstatus.Id;
-            resolution.Description = "Chamado Atribuído a um Técnico";
+            resolution.Description = "OS Atribuído a um Técnico";
             _context.Add(resolution);
             await _context.SaveChangesAsync();
 
-            var os = await _context.Tickets
-                .Where(x => x.Id == id)
+            var os = await _context.OS
+                .Where(x => x.Id == vm.Id)
                 .FirstOrDefaultAsync();
 
             os.StatusId = assignstatus.Id;
@@ -267,15 +347,22 @@ namespace HelpdeskSystem.Controllers.SO
             _context.Add(activity);
             var client = await _context.Users.FirstOrDefaultAsync(u => u.Id == resolution.CreatedById);
             var status = await _context.systemCodeDetails.FindAsync(resolution.StatusId);
-            await _emailTicketService.EnviarEmailAsync(
+            await _emailOSService.EnviarEmailAsync(
                     para: client.Email,
-                    assunto: $"O Chamado nº {resolution.OSId} foi atribuído a um técnico",
-                    mensagem: $"Seu chamado \"{resolution.OSId}\"  foi atribuído a um técnico com sucesso, por favor aguarde retorno.");
+                    assunto: $"Sua OS nº {resolution.OSId} foi atribuída a um técnico",
+                    mensagem: $"Sua OS \"{resolution.OSId}\"  foi atribuída a um técnico com sucesso, por favor aguarde retorno.");
+
+
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        // GET: Tickets/Create
+
+
+
+
+
+        // GET: OS/Create
         [HttpGet]
         public IActionResult Create()
         {
@@ -289,7 +376,7 @@ namespace HelpdeskSystem.Controllers.SO
             return View();
         }
 
-        // POST: Tickets/Create
+        // POST: 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -315,7 +402,7 @@ namespace HelpdeskSystem.Controllers.SO
             {
                 os.PriorityId = categoria.DefaultPriorityId.Value;
             }
-            os.CategoryId = os.CategoryId;
+            os.CategoryId = vm.CategoryId;
 
 
             os.Id = vm.Id;
@@ -342,15 +429,15 @@ namespace HelpdeskSystem.Controllers.SO
                 AffectedTable = "OS"
             };
             _context.Add(activity);
-            await _emailTicketService.EnviarEmailAsync(
+            await _emailOSService.EnviarEmailAsync(
                     para: User.FindFirstValue(ClaimTypes.Email),
-                    assunto: $"Ordem de Serviço nº {os.Id} criado",
-                    mensagem: $"Sua ordem de serviço \"{os.Title}\" foi criado com sucesso e está com status Pendente."
+                    assunto: $"Chamado nº {os.Id} criado",
+                    mensagem: $"Seu chamado \"{os.Title}\" foi criado com sucesso e está com status Pendente."
 );
 
             await _context.SaveChangesAsync();
             ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "FullName", os.CreatedBy);
-            ViewData["CategoryId"] = new SelectList(_context.TicketCategories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.OSCategories, "Id", "Name");
             ViewData["PriorityId"] = new SelectList(_context.systemCodeDetails.Include(x => x.SystemCode).Where(x => x.SystemCode.Code == "PRD"), "Id", "Description");
             return RedirectToAction(nameof(Index));
         }
@@ -389,32 +476,32 @@ namespace HelpdeskSystem.Controllers.SO
             if (id != os.Id)
                 return NotFound();
 
-            var OSOriginal = await _context.OS.FindAsync(id);
+            var Original = await _context.OS.FindAsync(id);
 
-            if (OSOriginal == null)
+            if (Original == null)
                 return NotFound();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 
             // Preserva os dados originais de criação
-            _context.Entry(OSOriginal).Property(x => x.CreatedById).IsModified = false;
-            _context.Entry(OSOriginal).Property(x => x.CreatedOn).IsModified = false;
-            _context.Entry(OSOriginal).Property(x => x.StatusId).IsModified = false;
+            _context.Entry(Original).Property(x => x.CreatedById).IsModified = false;
+            _context.Entry(Original).Property(x => x.CreatedOn).IsModified = false;
+            _context.Entry(Original).Property(x => x.StatusId).IsModified = false;
 
             // Marca como modificado
-            OSOriginal.ModifiedOn = DateTime.Now;
-            OSOriginal.ModifiedById = userId;
-            OSOriginal.Id = os.Id;
-            OSOriginal.Title = os.Title;
-            OSOriginal.Description = os.Description;
-            OSOriginal.CategoryId = os.CategoryId;
-            OSOriginal.SubCategoryId = os.SubCategoryId;
-            OSOriginal.Attachment = os.Attachment;
+            Original.ModifiedOn = DateTime.Now;
+            Original.ModifiedById = userId;
+            Original.Id = os.Id;
+            Original.Title = os.Title;
+            Original.Description = os.Description;
+            Original.CategoryId = os.CategoryId;
+            Original.SubCategoryId = os.SubCategoryId;
+            Original.Attachment = os.Attachment;
 
 
 
-            _context.Update(OSOriginal);
+            _context.Update(Original);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
 
@@ -446,10 +533,10 @@ namespace HelpdeskSystem.Controllers.SO
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var os = await _context.OS.FindAsync(id);
+            var os = await _context.Tickets.FindAsync(id);
             if (os != null)
             {
-                _context.OS.Remove(os);
+                _context.Tickets.Remove(os);
             }
 
             await _context.SaveChangesAsync();

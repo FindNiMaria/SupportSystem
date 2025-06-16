@@ -10,10 +10,12 @@
         <div class="col-md-3">
             <label>Módulo</label>
             <input asp-for="Module" class="form-control" />
+            <option value="">Todos</option>
         </div>
         <div class="col-md-3">
             <label>Ação</label>
             <input asp-for="Action" class="form-control" />
+            <option value="">Todos</option>
         </div>
         <div class="col-md-3">
             <label>Usuário</label>
@@ -61,7 +63,7 @@
                 @Html.DisplayNameFor(model => model.IpAdress)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.FullName)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th>Visualizar</th>
         </tr>
@@ -85,7 +87,7 @@
                 @Html.DisplayFor(modelItem => item.IpAdress)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User.FullName)
             </td>
             <td>
                 <a class="btn btn-dark" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>

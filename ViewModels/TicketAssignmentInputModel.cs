@@ -1,13 +1,16 @@
 ﻿using HelpdeskSystem.Models.Ticket;
 using HelpdeskSystem.ViewModels;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 public class TicketAssignmentInputModel
 {
     [Required]
+    [DisplayName("Nº")]
     public int Id { get; set; } // Id do chamado
 
     [Required]
+    [DisplayName("Atribuído a")]
     public int AssignedToId { get; set; } // Técnico selecionado (GUID)
 
     [Required]

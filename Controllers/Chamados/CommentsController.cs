@@ -118,6 +118,7 @@ namespace HelpdeskSystem.Controllers.Chamados
         }
 
         // GET: Comments/Edit/5
+        // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -130,10 +131,18 @@ namespace HelpdeskSystem.Controllers.Chamados
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "FullName", comment.CreatedById);
-            ViewData["IdChamado"] = new SelectList(_context.Tickets, "Id", "Titulo", comment.TicketId);
+
+            // Preenche o dropdown com os chamados disponíveis
+            ViewData["IdChamado"] = new SelectList(
+                _context.Tickets,
+                "Id",
+                "Titulo",
+                comment.TicketId
+            );
+
             return View(comment);
         }
+
 
         // POST: Comments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.

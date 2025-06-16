@@ -7,39 +7,44 @@
 <h1>Chamados</h1>
 <form asp-action="Index" method="get" class="mb-3">
     <div class="row">
-        <div class="col">
+        <div class="col-md-3">
+            <label>Categoria</label>
             <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control">
-                <option value="">Categoria</option>
+                <option value="">Todos</option>
             </select>
         </div>
-        <div class="col">
+        <div class="col-md-3">
+            <label>Prioridade</label>
             <select asp-for="PriorityId" asp-items="Model.Priorities" class="form-control">
-                <option value="">Prioridade</option>
+                <option value="">Todos</option>
             </select>
         </div>
-        <div class="col">
+        <div class="col-md-3">
+            <label>Status</label>
             <select asp-for="StatusId" asp-items="Model.Statuses" class="form-control">
-                <option value="">Status</option>
+                <option value="">Todos</option>
             </select>
         </div>
-        <div class="col">
+        <div class="col-md-3">
+            <label>Técnico</label>
             <select asp-for="TechnicianId" asp-items="Model.Technicians" class="form-control">
-                <option value="">Técnico</option>
+                <option value="">Todos</option>
             </select>
         </div>
-        <div class="col">
-            <button type="submit" class="btn btn-primary">Filtrar</button>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+            <a asp-action="Create"class="btn btn-dark mt-2">Novo Chamado</a>    
         </div>
     </div>
 </form>
 <p>
-    <a class="btn btn-dark" asp-action="Create">Novo Chamado</a>
-     @if (User.IsInRole("Administrador"))
-     {
+    @if (User.IsInRole("Administrador"))
+    {
         <form asp-action="ImportEmails" method="post" class="mb-3">
             <button type="submit" class="btn btn-primary">Importar E-mails</button>
         </form>
-     }
+    }
 </p>
 <div class="card">
     <div class="card-header">
@@ -66,13 +71,16 @@
                         @Html.DisplayNameFor(model => model.PriorityId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
+                        Criado por: 
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedOn)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.TicketDuration)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.AssignedToId)
                     </th>
                     <th>Nº de Obs.</th>
                     <th>Ações</th>
@@ -90,7 +98,7 @@
                     }
                     else if (item.Status.Code == "AND")
                     {
-                        colorcode = "Yellow";
+                        colorcode = "Orange";
                     }
                     else if (item.Status.Code == "PND")
                     {
@@ -125,10 +133,15 @@
                             @Html.DisplayFor(modelItem => item.CreatedOn)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.TicketDuration)
+                            @($"{item.TicketDuration} dias")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AssignedTo.FullName) 
                         </td>
                         <td style="text-align: center">
-                            @Html.DisplayFor(modelItem => item.TicketComments.Count)
+                            <a asp-controller="Comments" asp-action="Index" asp-route-ticketId="@item.Id">
+                                @Html.DisplayFor(modelItem => item.TicketComments.Count)
+                            </a>
                         </td>
                         <td>
                             <div class="ms-auto">

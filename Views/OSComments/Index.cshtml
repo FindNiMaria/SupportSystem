@@ -1,14 +1,42 @@
-﻿@model IEnumerable<HelpdeskSystem.Models.SO.OSComment>
+﻿@model HelpdeskSystem.ViewModels.OSCommentsViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <h1>Observação</h1>
-
-<p>
-    <a class="btn btn-dark" asp-action="Create">Criar Novo</a>
-</p>
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>OS</label>
+            <select asp-for="OSId" asp-items="Model.Ordens" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Usuário</label>
+            <select asp-for="CreatedById" asp-items="Model.Users" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>Palavra-chave</label>
+            <input asp-for="DescriptionKeyword" class="form-control" placeholder="Buscar na descrição..." />
+        </div>
+        <div class="col-md-3">
+            <label>Data Inicial</label>
+            <input asp-for="CreatedFrom" class="form-control" type="date" />
+        </div>
+        <div class="col-md-3 mt-2">
+            <label>Data Final</label>
+            <input asp-for="CreatedTo" class="form-control" type="date" />
+        </div>
+        <div class="col-md-3 mt-4">
+            <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+            <a asp-action="Index" class="btn btn-secondary mt-2">Limpar</a>
+        </div>
+    </div>
+</form>
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Observações de Ordens de Serviço: </h3>
@@ -19,10 +47,10 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.Description)
+                        Descrição
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.OS)
+                        OS
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedOn)
@@ -30,13 +58,12 @@
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedBy)
                     </th>
-                    <th>Editar</th>
                     <th>Ver</th>
                     <th>Apagar</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Comments)
                 {
                     <tr>
                         <td>
@@ -50,9 +77,6 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.CreatedBy.FullName)
-                        </td>
-                        <td>
-                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
                         </td>
                         <td>
                             <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Detalhes</a>

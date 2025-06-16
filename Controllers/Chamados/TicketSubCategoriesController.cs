@@ -106,7 +106,6 @@ namespace HelpdeskSystem.Controllers.Chamados
             _context.Add(activity);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", new {id});
-            return View(ticketSubCategory);
         }
 
         // GET: TicketSubCategories/Edit/5
@@ -122,8 +121,7 @@ namespace HelpdeskSystem.Controllers.Chamados
             {
                 return NotFound();
             }
-            ViewData["CriadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.CreatedById);
-            ViewData["ModificadoPorId"] = new SelectList(_context.Users, "Id", "Id", ticketSubCategory.ModifiedById);
+        
             return View(ticketSubCategory);
         }
 
@@ -132,41 +130,51 @@ namespace HelpdeskSystem.Controllers.Chamados
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,TicketSubCategory ticketSubCategory)
+        public async Task<IActionResult> Edit(int id, TicketSubCategory input)
         {
-            if (id != ticketSubCategory.Id)
-            {
+            if (id != input.Id)
                 return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            // Busca original do banco
+            var original = await _context.TicketSubCategories
+                .Include(x => x.Category)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.ModifiedBy)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (original == null)
+                return NotFound();
+
+            var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Atualiza SOMENTE os campos que o usuário pôde editar
+            original.Name = input.Name;
+            original.Code = input.Code;
+
+            // Atualiza os metadados
+            original.ModifiedById = usuariologado;
+            original.ModifiedOn = DateTime.Now;
+
+            try
             {
-                try
-                {
-                    var usuariologado = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    ticketSubCategory.ModifiedById = usuariologado;
-                    ticketSubCategory.ModifiedOn = DateTime.Now;
-                    _context.Update(ticketSubCategory);
-                    await _context.SaveChangesAsync();
+                _context.Update(original);
+                await _context.SaveChangesAsync();
 
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TicketSubCategoryExists(ticketSubCategory.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", new { id = original.CategoryId });
             }
-            return View(ticketSubCategory);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.TicketSubCategories.Any(x => x.Id == input.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
         }
 
-        // GET: TicketSubCategories/Delete/5
+
+
+
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -175,9 +183,11 @@ namespace HelpdeskSystem.Controllers.Chamados
             }
 
             var ticketSubCategory = await _context.TicketSubCategories
-                .Include(t => t.CreatedOn)
-                .Include(t => t.ModifiedOn)
+                .Include(t => t.Category)          // entidade relacionada (exemplo)
+                .Include(t => t.CreatedBy)         // usuário que criou
+                .Include(t => t.ModifiedBy)        // usuário que modificou
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (ticketSubCategory == null)
             {
                 return NotFound();
@@ -185,6 +195,7 @@ namespace HelpdeskSystem.Controllers.Chamados
 
             return View(ticketSubCategory);
         }
+
 
         // POST: TicketSubCategories/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -198,7 +209,7 @@ namespace HelpdeskSystem.Controllers.Chamados
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", new { id = ticketSubCategory.CategoryId });
         }
 
         private bool TicketSubCategoryExists(int id)

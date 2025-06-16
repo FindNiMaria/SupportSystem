@@ -31,10 +31,10 @@ namespace HelpdeskSystem.Controllers.User
                 .Include(a => a.User)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(vm.Module))
+            if (!string.IsNullOrWhiteSpace(vm.Module) && vm.Module != "Index")
                 query = query.Where(a => a.Module.Contains(vm.Module));
 
-            if (!string.IsNullOrWhiteSpace(vm.Action))
+            if (!string.IsNullOrWhiteSpace(vm.Action) && vm.Action != "Index")
                 query = query.Where(a => a.Action.Contains(vm.Action));
 
             if (!string.IsNullOrWhiteSpace(vm.UserId))
@@ -49,7 +49,7 @@ namespace HelpdeskSystem.Controllers.User
             if (vm.To.HasValue)
                 query = query.Where(a => a.TimeStamp <= vm.To.Value);
 
-            vm.Logs = await query.OrderByDescending(a => a.TimeStamp).ToListAsync();
+            vm.Logs = await query.ToListAsync();
             vm.Users = new SelectList(_context.Users, "Id", "FullName");
 
             return View(vm);

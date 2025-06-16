@@ -58,6 +58,7 @@ namespace HelpdeskSystem.Controllers.Chamados
                 .Include(t => t.Category)
                 .Include(t => t.SubCategory)
                 .Include(t => t.CreatedBy)
+                .Include(t => t.TicketComments)
                 .AsQueryable();
 
             //  Regras de visibilidade baseadas em permissões
@@ -116,7 +117,8 @@ namespace HelpdeskSystem.Controllers.Chamados
                 Attachment = t.Attachment,
                 AssignedToId = t.AssignedToId,
                 AssignedTo = t.AssignedTo,
-                AssignedOn = t.AssignedOn
+                AssignedOn = t.AssignedOn,
+                TicketComments = t.TicketComments.ToList()
             }).ToList();
 
             // SelectLists para filtros na view
@@ -164,7 +166,7 @@ namespace HelpdeskSystem.Controllers.Chamados
             resolution.TicketId = id;
             resolution.CreatedById = userId;
             resolution.CreatedOn = DateTime.Now;
-            resolution.Description = vm.TicketDescription;
+            resolution.Description = vm.TicketDescription ?? "Sem Descrição" ;
             resolution.StatusId = vm.StatusId;
             _context.Add(resolution);
             await _context.SaveChangesAsync();

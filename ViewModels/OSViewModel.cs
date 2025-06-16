@@ -1,12 +1,12 @@
 ﻿using HelpdeskSystem.Models.SO;
-using HelpdeskSystem.Models.System;
-using HelpdeskSystem.Models.Ticket;
-using HelpdeskSystem.Models.User;
 using System.ComponentModel;
+using HelpdeskSystem.Models.System;
+using HelpdeskSystem.Models.User;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HelpdeskSystem.ViewModels
 {
-    public class OSViewModel
+    public class OSViewModel : UserActivity
     {
         [DisplayName("Nº")]
         public int Id { get; set; }
@@ -41,16 +41,17 @@ namespace HelpdeskSystem.ViewModels
 
         [DisplayName("Anexo: ")]
         public String Attachment { get; set; }
-        public List<OS> OS { get; set; }
+        public List<OSViewModel> OS { get; set; }
         public OS OSDetails { get; set; }
-        public List<OSComment> OSComments { get; set; }
         public OSComment OSComment { get; set; }
         public string OSDescription { get; set; }
-        public List<OSResolution> OSResolutions { get; set; }
+        public List<OSComment> OSComments { get; set; } = new();
+        public List<OSResolution> OSResolutions { get; set; } = new();
         public OSResolution Resolution { get; set; }
         public string? AssignedToId { get; set; }
         public ApplicationUser AssignedTo { get; set; }
         public DateTime? AssignedOn { get; set; }
+
 
         [DisplayName("Duração")]
         public int? OSDuration
@@ -67,7 +68,13 @@ namespace HelpdeskSystem.ViewModels
 
                 return difference.Days;
             }
-
         }
+        public string? TechnicianId { get; set; }
+
+        public IEnumerable<SelectListItem> Categories { get; set; }
+        public IEnumerable<SelectListItem> Priorities { get; set; }
+        public IEnumerable<SelectListItem> Statuses { get; set; }
+        public IEnumerable<SelectListItem> Technicians { get; set; }
     }
 }
+

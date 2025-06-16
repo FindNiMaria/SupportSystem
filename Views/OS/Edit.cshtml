@@ -1,7 +1,7 @@
 ﻿@model HelpdeskSystem.Models.SO.OS;
 
 @{
-    ViewData["Title"] = "Editar Ordem de Serviço";
+    ViewData["Title"] = "Editar OS";
 }
 
 <h1>Editar</h1>
@@ -109,7 +109,7 @@
 
             if (categoriaId) {
                 // Buscar prioridade da categoria
-                $.get('/Data/GetCategoriaPrioridade', { categoriaId: categoriaId }, function (data) {
+                $.get('/Data/GetOSCategoriaPrioridade', { categoriaId: categoriaId }, function (data) {
                     if (data && data.id && data.descricao) {
                         $('#PrioridadeSelect').html(`<option selected>${data.descricao}</option>`);
                         $('input[name="PriorityId"]').val(data.id);
@@ -120,7 +120,7 @@
                 });
 
                 // Buscar subcategorias da categoria
-                $.get('/Data/GetTicketSubCategories', { Id: categoriaId }, function (data) {
+                $.get('/Data/GetOSSubCategories', { Id: categoriaId }, function (data) {
                     let options = '<option value="">-- Selecione uma Subcategoria --</option>';
                     $.each(data, function (index, item) {
                         options += `<option value="${item.id}">${item.name}</option>`;

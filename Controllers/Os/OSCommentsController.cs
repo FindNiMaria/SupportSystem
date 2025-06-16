@@ -10,6 +10,7 @@ using HelpdeskSystem.Models;
 using System.Security.Claims;
 using HelpdeskSystem.Models.SO;
 using HelpdeskSystem.Models.User;
+using HelpdeskSystem.ViewModels;
 
 namespace HelpdeskSystem.Controllers.SO
 {
@@ -23,18 +24,34 @@ namespace HelpdeskSystem.Controllers.SO
         }
 
         // GET: Comments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(OSCommentsViewModel vm)
         {
-            var applicationDbContext = _context.OSComment_1.Include(c => c.CreatedBy).Include(c => c.OS);
-            return View(await applicationDbContext.ToListAsync());
-        }
-        // GET: Comments Criar
-        public async Task<IActionResult> OSComment(int Id)
-        {
-            var comments = await _context.OSComment_1.Where(x => x.OSId == Id)
+            var query = _context.OSComment_1
                 .Include(c => c.CreatedBy)
-                .Include(c => c.OS).ToListAsync();
-            return View(comments);
+                .Include(c => c.OS)
+                .AsQueryable();
+
+            if (vm.OSId.HasValue)
+                query = query.Where(c => c.OSId == vm.OSId);
+
+            if (!string.IsNullOrWhiteSpace(vm.CreatedById))
+                query = query.Where(c => c.CreatedById == vm.CreatedById);
+
+            if (!string.IsNullOrWhiteSpace(vm.DescriptionKeyword))
+                query = query.Where(c => c.Description.Contains(vm.DescriptionKeyword));
+
+            if (vm.CreatedFrom.HasValue)
+                query = query.Where(c => c.CreatedOn >= vm.CreatedFrom.Value);
+
+            if (vm.CreatedTo.HasValue)
+                query = query.Where(c => c.CreatedOn <= vm.CreatedTo.Value);
+
+            vm.Comments = await query.OrderByDescending(c => c.CreatedOn).ToListAsync();
+
+            vm.Ordens = new SelectList(_context.OS, "Id", "Title");
+            vm.Users = new SelectList(_context.Users, "Id", "FullName");
+
+            return View(vm);
         }
         // GET: Comments/Details/5
         public async Task<IActionResult> Details(int? id)
