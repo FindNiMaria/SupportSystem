@@ -1,162 +1,235 @@
 ﻿@page
-@model RegisterModel
+@model HelpdeskSystem.Areas.Identity.Pages.Account.RegisterModel
 @{
     ViewData["Title"] = "Registrar";
     Layout = null;
 }
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SupportHelper | Registro</title>
 
-<h1>@ViewData["Title"]</h1>
-    <!DOCTYPE html>
-    <html lang="pt_BR">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>SupportHelper | Registro</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css" />
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css" />
+</head>
+<body class="hold-transition register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a href="" class="h1"><b>Support</b>Helper</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">Crie uma Conta</p>
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <!-- Nome -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="Nome" />
+                        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-user"></span></div>
+                        </div>
+                    </div>
 
-        <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-        <!-- icheck bootstrap -->
-        <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-        <!-- Theme style -->
-        <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
-    </head>
-    <body class="hold-transition register-page">
-        <div class="register-box">
-            <div class="card card-outline card-primary">
-                <div class="card-header text-center">
-                    <a href="" class="h1"><b>Support</b>Helper</a>
-                </div>
-                <div class="card-body">
-                    <p class="login-box-msg">Crie uma Conta</p>
+                    <!-- Sobrenome -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Sobrenome" />
+                        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-user"></span></div>
+                        </div>
+                    </div>
 
-                <form id ="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <!-- Email -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" placeholder="Email" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
+                        </div>
+                    </div>
 
-                        <!--Campo Nome-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.FirstName" class="form-control" placeholder="Nome"/>
-                            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-user"></span>
-                                </div>
+                    <!-- Telefone -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.Telephone" class="form-control" placeholder="Telefone" />
+                        <span asp-validation-for="Input.Telephone" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-phone"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Genero -->
+                    <div class="input-group mb-3">
+                        <select asp-for="Input.Gender" class="form-control">
+                            <option value="">Selecione o gênero</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-transgender"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- País -->
+                    <div class="input-group mb-3">
+                        <select id="country" name="Input.Country" asp-for="Input.Country" class="form-control">
+                            <option value="">Selecione o país</option>
+                        </select>
+                        <span asp-validation-for="Input.Country" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-globe"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Cidade (container para trocar select/input) -->
+                    <div class="input-group mb-3" id="city-container">
+                        <select id="city" name="Input.City" asp-for="Input.City" class="form-control" disabled>
+                            <option value="">Selecione a cidade</option>
+                        </select>
+                        <span asp-validation-for="Input.City" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-map-marker-alt"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Senha -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" placeholder="Senha" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmar Senha -->
+                    <div class="input-group mb-3">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" placeholder="Confirmar Senha" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="agreeTerms" name="terms" value="agree" />
+                                <label for="agreeTerms">Eu aceito os <a href="#">Termos de Serviço</a></label>
                             </div>
                         </div>
-
-                        <!--Campo Sobrenome-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.LastName" class="form-control" placeholder="Sobrenome" />
-                            <span asp-validation-for="Input.LastName" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-user"></span>
-                                </div>
-                            </div>
+                        <div class="col-4">
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-block">Registrar</button>
                         </div>
-
-                         <!--Campo Email-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <!--Campo Telefone-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.Telephone" class="form-control" placeholder="Telefone" />
-                            <span asp-validation-for="Input.Telephone" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                <span class="fas fa-phone"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <!--Campo Genero-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.Gender" class="form-control" placeholder="Genero" />
-                            <span asp-validation-for="Input.Gender" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-transgender"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                         <!--Campo País-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.Country" class="form-control" placeholder="País" />
-                            <span asp-validation-for="Input.Country" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-globe"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--Campo Cidade-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.City" class="form-control" placeholder="Cidade"/>
-                            <span asp-validation-for="Input.City" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-globe"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--Campo Senha-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Senha" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-lock"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!--Campo Confirmar Senha-->
-                        <div class="input-group mb-3">
-                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirmar Senha" />
-                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-lock"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-8">
-                                <div class="icheck-primary">
-                                    <input type="checkbox" id="agreeTerms" name="terms" value="agree">
-                                    <label for="agreeTerms">
-                                        Eu aceito os <a href="#">Termos de Serviço</a>
-                                    </label>
-                                </div>
-                            </div>
-                            <!-- /.col -->
-                            <div class="col-4">
-                                <button typid="registerSubmit" type="submit" class="btn btn-primary btn-block">Registrar</button>
-                            </div>
-                            <!-- /.col -->
-                        </div>
-                    </form>
-                </div>
-                <!-- /.form-box -->
-            </div><!-- /.card -->
+                    </div>
+                </form>
+            </div>
         </div>
-        <!-- /.register-box -->
-        <!-- jQuery -->
-        <script src="../../plugins/jquery/jquery.min.js"></script>
-        <!-- Bootstrap 4 -->
-        <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    </body>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../plugins/jquery/jquery.min.js"></script>
+    <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const countrySelect = $('#country');
+            const cityContainer = $('#city-container');
+
+            // Registrar evento change
+            countrySelect.on('change', function () {
+                const pais = $(this).val();
+
+                if (pais === "Brasil" || pais === "Brazil") {
+                    carregarCidadesBrasil();
+                } else {
+                    // Trocar para input texto
+                    const newInput = `
+                        <input type="text" id="city" name="Input.City" class="form-control" placeholder="Cidade" />
+                    `;
+                    cityContainer.html(newInput + `
+                        <span class="text-danger" asp-validation-for="Input.City"></span>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-map-marker-alt"></span>
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+
+            // Carrega países
+            countrySelect.empty().append('<option>Carregando países...</option>').prop('disabled', true);
+
+            $.ajax({
+                url: 'https://restcountries.com/v3.1/all?fields=name',
+                method: 'GET',
+                success: function (countries) {
+                    countrySelect.empty().append('<option value="">Selecione o país</option>');
+                    countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
+                    countries.forEach(function (country) {
+                        countrySelect.append(`<option value="${country.name.common}">${country.name.common}</option>`);
+                    });
+                    countrySelect.prop('disabled', false);
+
+                    // Se já tiver país selecionado (edição), seleciona e dispara onchange
+                    const selected = '@Model.Input.Country';
+                    if (selected) countrySelect.val(selected).trigger('change');
+                },
+                error: function (err) {
+                    console.error('Erro ao carregar países:', err);
+                    countrySelect.empty().append('<option>Falha ao carregar países</option>');
+                }
+            });
+
+            function carregarCidadesBrasil() {
+                // Restaura select no container
+                cityContainer.html(`
+                    <select id="city" name="Input.City" asp-for="Input.City" class="form-control" disabled>
+                        <option value="">Selecione a cidade</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="Input.City"></span>
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <span class="fas fa-map-marker-alt"></span>
+                        </div>
+                    </div>
+                `);
+
+                const citySelect = $('#city');
+                citySelect.prop('disabled', true).empty().append('<option>Carregando cidades...</option>');
+
+                $.ajax({
+                    url: 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios',
+                    method: 'GET',
+                    success: function (data) {
+                        citySelect.empty().append('<option value="">Selecione a cidade</option>');
+                        data.sort((a, b) => a.nome.localeCompare(b.nome));
+                        data.forEach(function (cidade) {
+                            citySelect.append(`<option value="${cidade.nome}">${cidade.nome}</option>`);
+                        });
+                        citySelect.prop('disabled', false);
+
+                        // Preenche cidade selecionada (edição)
+                        const selectedCity = '@(Model?.Input?.City ?? "")';
+                        if (selectedCity) citySelect.val(selectedCity);
+                    },
+                    error: function () {
+                        citySelect.empty().append('<option>Erro ao carregar cidades</option>');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
 </html>
 
-    @section Scripts {
+@section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

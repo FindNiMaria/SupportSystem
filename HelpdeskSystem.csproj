@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\LocationService.cs" />
     <Compile Remove="ViewModels\TicketIndexViewModel.cs" />
     <Compile Remove="Views\OSComments\OSComment.cs" />
   </ItemGroup>

@@ -34,12 +34,10 @@ namespace HelpdeskSystem.Jobs
         {
             var agora = DateTime.Now;
 
-            // Buscar os IDs das prioridades
             var prioridades = _context.systemCodeDetails
                 .Where(c => NiveisPrioridade.Keys.Contains(c.Code.ToUpper()))
                 .ToDictionary(c => c.Code.ToUpper(), c => c.Id);
 
-            // Buscar ID do status "CLOSED"
             var statusFechadoId = _context.systemCodeDetails
                 .Where(c => c.Code.ToUpper() == STATUS_CLOSED)
                 .Select(c => c.Id)
@@ -48,6 +46,18 @@ namespace HelpdeskSystem.Jobs
             var chamados = _context.Tickets
                 .Where(t => t.StatusId != statusFechadoId)
                 .ToList();
+
+            var configuracoes = _context.SystemSettings
+                .Where(s => s.Code.StartsWith("TKTRESOLUTION"))
+                .ToDictionary(
+                    s => s.Code.ToUpper(),
+                    s => int.TryParse(s.Value, out int dias) ? dias * 24 : int.MaxValue // converte dias em horas
+                );
+
+            configuracoes.TryGetValue("TKTRESOLUTIONURGENT", out int horasCritica);
+            configuracoes.TryGetValue("TKTRESOLUTIONHIGH", out int horasAlta);
+            configuracoes.TryGetValue("TKTRESOLUTIONMEDIUM", out int horasMedia);
+            configuracoes.TryGetValue("TKTRESOLUTIONLOW", out int horasBaixa); // opcional
 
             foreach (var chamado in chamados)
             {
@@ -65,27 +75,25 @@ namespace HelpdeskSystem.Jobs
 
                 int nivelAtual = NiveisPrioridade[prioridadeAtualCode];
 
-                if (horasInativo >= 72 && nivelAtual < NiveisPrioridade[PRIORIDADE_CRITICA])
+                if (horasInativo >= horasCritica && nivelAtual < NiveisPrioridade[PRIORIDADE_CRITICA])
                 {
                     chamado.PriorityId = prioridades[PRIORIDADE_CRITICA];
                     _context.Entry(chamado).State = EntityState.Modified;
-                    Console.WriteLine($"[Escalonamento] Chamado {chamado.Id} atualizado para prioridade CRÍTICA ({chamado.PriorityId})");
                 }
-                else if (horasInativo >= 48 && nivelAtual < NiveisPrioridade[PRIORIDADE_ALTA])
+                else if (horasInativo >= horasAlta && nivelAtual < NiveisPrioridade[PRIORIDADE_ALTA])
                 {
                     chamado.PriorityId = prioridades[PRIORIDADE_ALTA];
                     _context.Entry(chamado).State = EntityState.Modified;
-                    Console.WriteLine($"[Escalonamento] Chamado {chamado.Id} atualizado para prioridade ALTA ({chamado.PriorityId})");
                 }
-                else if (horasInativo >= 24 && nivelAtual < NiveisPrioridade[PRIORIDADE_MEDIA])
+                else if (horasInativo >= horasMedia && nivelAtual < NiveisPrioridade[PRIORIDADE_MEDIA])
                 {
                     chamado.PriorityId = prioridades[PRIORIDADE_MEDIA];
                     _context.Entry(chamado).State = EntityState.Modified;
-                    Console.WriteLine($"[Escalonamento] Chamado {chamado.Id} atualizado para prioridade MÉDIA ({chamado.PriorityId})");
                 }
             }
 
             _context.SaveChanges();
         }
+
     }
 }
